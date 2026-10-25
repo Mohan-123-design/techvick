@@ -1,0 +1,425 @@
+/* ===================================
+   WARRANTY PAGE STYLES
+   =================================== */
+
+.warranty-page {
+  padding-bottom: 5rem;
+}
+
+.warranty-header {
+  padding: 4rem 0 3rem;
+  background: radial-gradient(circle at 50% 10%, rgba(59, 130, 246, 0.15) 0%, rgba(10, 14, 26, 0.6) 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.warranty-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.warranty-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent-400);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 1rem;
+}
+
+.warranty-header-inner h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.warranty-header-inner p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Search Card */
+.warranty-search-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.warranty-search-form {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.warranty-search-form .search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+}
+
+.warranty-search-form input {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1rem 1rem 3.2rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.warranty-search-form input:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.sample-queries {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sample-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.sample-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sample-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sample-chip:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-400);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Results Section */
+.warranty-result-section {
+  padding: 3rem 0;
+}
+
+.result-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-xl);
+}
+
+.result-card.active-card {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 40px rgba(16, 185, 129, 0.08);
+}
+
+.result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.status-badge.green {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.status-badge.red {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.serial-display {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-md);
+}
+
+.result-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.result-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.col-sub {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.05em;
+}
+
+.result-col h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.result-col h4 {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.product-category-sub,
+.phone-sub,
+.store-sub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Timeline */
+.warranty-timeline {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-dates {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.days-left-highlight {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.timeline-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.timeline-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.timeline-bar-fill.green {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.timeline-bar-fill.red {
+  background: #ef4444;
+}
+
+.coverage-scope-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.scope-icon {
+  color: var(--accent-400);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.result-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Not Found Card */
+.not-found-card {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.not-found-icon {
+  color: #f59e0b;
+  margin: 0 auto 1rem;
+}
+
+.not-found-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.not-found-card p {
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Claim Modal */
+.claim-modal {
+  max-width: 540px;
+  padding: 2.5rem;
+}
+
+.claim-modal h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.claim-product-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.claim-success-view {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.claim-ok-icon {
+  color: #34d399;
+  margin: 0 auto 1rem;
+}
+
+.claim-success-view h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.claim-success-view p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Policy Cards */
+.policy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.policy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  transition: all var(--transition-fast);
+}
+
+.policy-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-hover);
+}
+
+.policy-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.policy-icon.blue { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
+.policy-icon.green { background: rgba(16, 185, 129, 0.12); color: #34d399; }
+.policy-icon.amber { background: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+.policy-icon.purple { background: rgba(168, 85, 247, 0.12); color: #c084fc; }
+
+.policy-card h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.policy-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .warranty-search-form {
+    flex-direction: column;
+  }
+
+  .result-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .warranty-header-inner h1 {
+    font-size: 2rem;
+  }
+}

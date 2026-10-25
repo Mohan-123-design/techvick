@@ -1,0 +1,557 @@
+/* ===================================
+   BOOK SERVICE PAGE STYLES
+   =================================== */
+
+.book-service-page {
+  padding: 3rem 0 5rem;
+}
+
+.book-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+}
+
+.book-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 1rem;
+}
+
+.book-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.book-header p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.no-mobiles-alert {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f87171;
+}
+
+/* Layout */
+.book-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.book-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.form-section {
+  margin-bottom: 2.25rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1.5rem;
+}
+
+.form-section h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+}
+
+/* Mode Selection Cards */
+.mode-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.mode-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.mode-card input[type="radio"] {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  accent-color: var(--accent-500);
+}
+
+.mode-card:hover {
+  border-color: var(--border-hover);
+}
+
+.mode-card.active {
+  border-color: var(--accent-500);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.mode-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mode-content {
+  flex: 1;
+}
+
+.mode-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.mode-title-row h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mode-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.mode-tag.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.mode-tag.blue {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.mode-content p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+
+.mode-price-note {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-400);
+}
+
+/* Device Selection Buttons */
+.device-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.device-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.device-btn:hover {
+  border-color: var(--border-hover);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.device-btn.active {
+  border-color: var(--accent-500);
+  background: rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 1px var(--accent-500);
+}
+
+.dev-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.dev-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.dev-cost {
+  font-size: 0.72rem;
+  color: var(--accent-400);
+  font-weight: 500;
+}
+
+/* Form Fields */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  transition: all var(--transition-fast);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Urgency Selector */
+.urgency-selector {
+  margin-top: 1rem;
+}
+
+.urgency-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.urgency-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.urgency-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.urgency-opt.active {
+  border-color: var(--accent-500);
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.submit-book-btn {
+  width: 100%;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  font-size: 1.05rem;
+}
+
+/* Sidebar Estimate Card */
+.estimate-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
+.estimate-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.estimate-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.estimate-sub {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-bottom: 1.5rem;
+}
+
+.estimate-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.25rem;
+}
+
+.est-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.est-line .green {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.est-line .accent {
+  color: var(--accent-400);
+  font-weight: 600;
+}
+
+.est-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-400);
+}
+
+.guarantee-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.gp-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.gp-item svg {
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+.store-hotline-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg);
+  color: var(--accent-400);
+}
+
+.hl-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.hl-num {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Confirmation Success Card */
+.confirmation-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+  text-align: center;
+}
+
+.confirm-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.confirm-check {
+  color: #34d399;
+}
+
+.confirmation-card h2 {
+  font-size: 1.85rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.confirm-sub {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.ticket-box {
+  background: var(--bg-secondary);
+  border: 2px dashed rgba(59, 130, 246, 0.4);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ticket-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.ticket-code {
+  font-size: 2rem;
+  font-family: monospace;
+  font-weight: 800;
+  color: var(--accent-400);
+  letter-spacing: 0.1em;
+}
+
+.ticket-note {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+.confirm-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  text-align: left;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.confirm-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-bottom: 0.2rem;
+}
+
+.cd-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cd-val.highlight {
+  color: #34d399;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+  .book-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .estimate-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .book-form {
+    padding: 1.5rem;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .confirm-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,10 +2,11 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status, Depends
 from typing import Optional
 from bson import ObjectId
 from common.database import Database
+from common.auth import require_admin
 from common.utils import serialize_doc, serialize_docs, utc_now, build_pagination, PRODUCT_CATEGORIES
 from .schemas import ProductCreate, ProductUpdate
 
@@ -105,7 +106,10 @@ async def get_product(product_id: str):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_product(product: ProductCreate):
+async def create_product(
+    product: ProductCreate,
+    current_admin: dict = Depends(require_admin),
+):
     """Create a new product (admin only)."""
     collection = Database.get_collection(COLLECTION)
     now = utc_now()
@@ -123,7 +127,11 @@ async def create_product(product: ProductCreate):
 
 
 @router.put("/{product_id}")
-async def update_product(product_id: str, product: ProductUpdate):
+async def update_product(
+    product_id: str,
+    product: ProductUpdate,
+    current_admin: dict = Depends(require_admin),
+):
     """Update a product (admin only)."""
     collection = Database.get_collection(COLLECTION)
     update_data = {k: v for k, v in product.model_dump().items() if v is not None}
@@ -140,23 +148,26 @@ async def update_product(product_id: str, product: ProductUpdate):
 
     if not result:
         raise HTTPException(status_code=404, detail="Product not found")
-    return {"product": serialize_doc(result), "message": "Product updated"}
+    return {"product": serialize_doc(result), "message": "Product updated successfully"}
 
 
 @router.delete("/{product_id}")
-async def delete_product(product_id: str):
-    """Soft-delete a product (admin only)."""
+async def delete_product(
+    product_id: str,
+    current_admin: dict = Depends(require_admin),
+):
+    """Delete a product (admin only)."""
     collection = Database.get_collection(COLLECTION)
     try:
-        result = await collection.find_one_and_update(
+        result = await collection.find_one_and_delete(
             {"_id": ObjectId(product_id)},
-            {"$set": {"is_active": False, "updated_at": utc_now()}},
         )
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid product ID")
     if not result:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted successfully"}
+
 
 
 @router.get("/brands/list")

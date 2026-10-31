@@ -417,3 +417,236 @@ export const MOCK_WARRANTIES = {
     remainingDays: 0
   }
 };
+
+export const MOCK_ORDERS = [
+  {
+    _id: 'ord-101',
+    order_number: 'TM-2026-X89A12',
+    customer_name: 'Anand Verma',
+    customer_phone: '+91 98765 44321',
+    customer_email: 'anand.verma@example.com',
+    fulfillment_type: 'pickup',
+    shipping_address: 'In-Store Pickup (TechMart Main Showroom)',
+    status: 'confirmed',
+    payment_method: 'counter_cod',
+    total: 52990,
+    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+    items: [
+      {
+        product_id: 'prod-lap-1',
+        name: 'HP ProBook 450 G10 Business Laptop',
+        price: 52990,
+        quantity: 1,
+        warranty_months: 24
+      }
+    ]
+  },
+  {
+    _id: 'ord-102',
+    order_number: 'TM-2026-Z77B90',
+    customer_name: 'Dr. S. Meenakshi',
+    customer_phone: '+91 98402 11982',
+    customer_email: 'clinic.meenakshi@gmail.com',
+    fulfillment_type: 'delivery',
+    shipping_address: 'Flat 4B, Emerald Heights, North Ring Road, 600028',
+    status: 'processing',
+    payment_method: 'upi',
+    total: 25480,
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+    items: [
+      {
+        product_id: 'prod-prn-1',
+        name: 'Epson EcoTank L3250 Wi-Fi All-in-One Ink Tank Printer',
+        price: 13990,
+        quantity: 1,
+        warranty_months: 24
+      },
+      {
+        product_id: 'prod-cctv-1',
+        name: 'CP PLUS 4-Channel 5MP Ultra HD Surveillance System Kit',
+        price: 11490,
+        quantity: 1,
+        warranty_months: 24
+      }
+    ]
+  },
+  {
+    _id: 'ord-103',
+    order_number: 'TM-2026-Q12K45',
+    customer_name: 'Apex Design Studio',
+    customer_phone: '+91 94441 88320',
+    customer_email: 'contact@apexdesigns.in',
+    fulfillment_type: 'delivery',
+    shipping_address: 'Unit 201, Cyber Park Avenue, Phase 2',
+    status: 'delivered',
+    payment_method: 'counter_cod',
+    total: 48990,
+    created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
+    items: [
+      {
+        product_id: 'prod-dsk-1',
+        name: 'TechMart Custom Core i7 Pro Creator Desktop',
+        price: 48990,
+        quantity: 1,
+        warranty_months: 36
+      }
+    ]
+  }
+];
+
+export const MOCK_SERVICE_REQUESTS = [
+  {
+    _id: 'srv-001',
+    ticket_number: 'SRV-882190',
+    service_mode: 'site_visit',
+    device_type: 'desktop',
+    brand: 'Custom Gaming Rig',
+    model: 'Core i7 RTX Build',
+    issue_category: 'overheating',
+    issue_description: 'PC randomly shuts down under load after 15 minutes of CAD rendering. Blue screen WHEA_UNCORRECTABLE_ERROR.',
+    urgency: 'urgent',
+    customer_name: 'Vikram Seth',
+    customer_phone: '+91 97890 12345',
+    customer_email: 'vikram.seth@live.com',
+    address: 'Plot 42, Sunrise Villa, IT Highway',
+    landmark: 'Behind Decathlon',
+    preferred_date: '2026-11-01',
+    preferred_time_slot: '10:00 AM - 01:00 PM',
+    status: 'assigned',
+    assigned_technician: 'Ramesh Kumar (Senior Hardware Engineer)',
+    technician_phone: '+91 98765 00112',
+    estimated_cost: 699,
+    created_at: new Date(Date.now() - 3600000 * 3).toISOString()
+  },
+  {
+    _id: 'srv-002',
+    ticket_number: 'SRV-441098',
+    service_mode: 'site_visit',
+    device_type: 'cctv',
+    brand: 'Hikvision',
+    model: 'ColorVu 8 Channel DVR',
+    issue_category: 'cctv_offline',
+    issue_description: 'Cameras 3 and 4 are flickering purple and mobile app shows network connection failed.',
+    urgency: 'standard',
+    customer_name: 'St. Mary High School',
+    customer_phone: '+91 94440 99887',
+    customer_email: 'admin@stmarysschool.edu',
+    address: '15, Church Road, Main Town',
+    landmark: 'Opposite State Library',
+    preferred_date: '2026-11-02',
+    preferred_time_slot: '01:00 PM - 04:00 PM',
+    status: 'submitted',
+    estimated_cost: 598,
+    created_at: new Date(Date.now() - 3600000 * 8).toISOString()
+  },
+  {
+    _id: 'srv-003',
+    ticket_number: 'SRV-110943',
+    service_mode: 'in_store',
+    device_type: 'laptop',
+    brand: 'Dell',
+    model: 'Latitude 5420',
+    issue_category: 'slow_upgrade',
+    issue_description: 'Need RAM upgrade from 8GB to 32GB and 1TB NVMe SSD installation with OS clone.',
+    urgency: 'standard',
+    customer_name: 'Pooja Hegde',
+    customer_phone: '+91 98400 33221',
+    status: 'in_progress',
+    assigned_technician: 'Senthil Nathan (Counter Specialist)',
+    estimated_cost: 499,
+    created_at: new Date(Date.now() - 3600000 * 18).toISOString()
+  }
+];
+
+export const MOCK_INQUIRIES = [
+  {
+    _id: 'inq-01',
+    name: 'Kiran Deshmukh',
+    phone: '+91 98111 22334',
+    email: 'kiran.d@example.com',
+    subject: 'bulk_order',
+    message: 'Looking to purchase 12 custom assembled desktop PCs and a network switch for our engineering firm. Need GST invoice and installation quote.',
+    status: 'new',
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
+  },
+  {
+    _id: 'inq-02',
+    name: 'Ananya Joshi',
+    phone: '+91 98222 33445',
+    email: 'ananya.j@example.com',
+    subject: 'cctv_quote',
+    message: 'Need 8-channel IP CCTV surveillance installed at our apartment society gate and parking basement. When can a technician visit for site survey?',
+    status: 'contacted',
+    response_note: 'Called customer, site survey scheduled for Tuesday 11 AM.',
+    created_at: new Date(Date.now() - 3600000 * 14).toISOString()
+  },
+  {
+    _id: 'inq-03',
+    name: 'Gaurav Singhal',
+    phone: '+91 97110 55443',
+    email: 'gaurav.s@gmail.com',
+    subject: 'amc',
+    message: 'We run a clinic with 5 workstations and 2 receipt printers. We want an annual AMC with monthly preventive checks and priority breakdown visits.',
+    status: 'resolved',
+    response_note: 'Sent AMC contract proposal proposal ₹14,999/year. Contract signed.',
+    created_at: new Date(Date.now() - 3600000 * 48).toISOString()
+  }
+];
+
+// Local Storage Managers for Offline fallback persistence
+export function getLocalProducts() {
+  try {
+    const saved = localStorage.getItem('techmart_products');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [...MOCK_PRODUCTS];
+}
+
+export function saveLocalProducts(products) {
+  try {
+    localStorage.setItem('techmart_products', JSON.stringify(products));
+  } catch {}
+}
+
+export function getLocalOrders() {
+  try {
+    const saved = localStorage.getItem('techmart_orders');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [...MOCK_ORDERS];
+}
+
+export function saveLocalOrders(orders) {
+  try {
+    localStorage.setItem('techmart_orders', JSON.stringify(orders));
+  } catch {}
+}
+
+export function getLocalServiceRequests() {
+  try {
+    const saved = localStorage.getItem('techmart_services');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [...MOCK_SERVICE_REQUESTS];
+}
+
+export function saveLocalServiceRequests(requests) {
+  try {
+    localStorage.setItem('techmart_services', JSON.stringify(requests));
+  } catch {}
+}
+
+export function getLocalInquiries() {
+  try {
+    const saved = localStorage.getItem('techmart_inquiries');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [...MOCK_INQUIRIES];
+}
+
+export function saveLocalInquiries(inquiries) {
+  try {
+    localStorage.setItem('techmart_inquiries', JSON.stringify(inquiries));
+  } catch {}
+}
+

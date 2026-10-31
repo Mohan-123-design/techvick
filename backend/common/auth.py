@@ -73,3 +73,16 @@ async def get_optional_user(
         return decode_token(credentials.credentials)
     except HTTPException:
         return None
+
+
+async def require_admin(
+    current_user: dict = Depends(get_current_user),
+) -> dict:
+    """Enforce that current authenticated user has 'admin' role."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Administrator privileges required.",
+        )
+    return current_user
+

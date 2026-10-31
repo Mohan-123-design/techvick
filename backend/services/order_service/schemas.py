@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Any
 from enum import Enum
 
 
@@ -14,36 +14,29 @@ class OrderStatus(str, Enum):
 
 class OrderItem(BaseModel):
     product_id: str
-    product_name: str
-    quantity: int = Field(..., ge=1)
-    price: float = Field(..., gt=0)
-    warranty_months: int = 0
+    name: Optional[str] = None
+    product_name: Optional[str] = None
+    quantity: int = Field(default=1, ge=1)
+    price: float = Field(..., ge=0)
+    warranty_months: Optional[int] = 0
 
 
 class OrderCreate(BaseModel):
     items: List[OrderItem] = Field(..., min_length=1)
-    shipping_address: str
-    city: str
-    pincode: str
-    phone: str
+    customer_name: Optional[str] = "Customer"
+    customer_phone: Optional[str] = ""
+    customer_email: Optional[str] = ""
+    shipping_address: Optional[str] = ""
+    delivery_address: Optional[str] = ""
+    city: Optional[str] = "Local"
+    pincode: Optional[str] = ""
+    phone: Optional[str] = ""
+    fulfillment_type: Optional[str] = "pickup"  # pickup, delivery
+    payment_method: Optional[str] = "cod"       # counter_cod, cod, upi
     notes: Optional[str] = None
-    payment_method: str = "cod"  # cod, online, store_pickup
+    total_amount: Optional[float] = None
 
 
-class OrderResponse(BaseModel):
-    id: str
-    order_number: str
-    user_id: str
-    items: List[dict]
-    subtotal: float
-    tax: float
-    total: float
+class OrderStatusUpdate(BaseModel):
     status: str
-    shipping_address: str
-    city: str
-    pincode: str
-    phone: str
-    notes: Optional[str] = None
-    payment_method: str
-    created_at: str
-    updated_at: str
+    admin_notes: Optional[str] = None

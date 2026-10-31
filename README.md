@@ -35,6 +35,21 @@ A full-stack, enterprise-grade e-commerce and IT service management platform tai
 - **Live Countdown Timeline**: Visual progress bar indicating active days remaining vs. expired status.
 - **Online Claim Submission**: File doorstep warranty claims or register store drop-offs directly from the portal.
 
+### 👑 5. Role-Based Access Control (RBAC) & Admin Portal
+- **End User / Customer Role**:
+  - Visit public store pages, browse hardware specs, add items to cart, and checkout.
+  - Book in-store diagnostics or doorstep technician site visits with live cost calculation.
+  - Submit contact inquiries and product warranty claims.
+- **Administrator Role (`/admin`)**:
+  - **Full Product CRUD**: Add, edit specifications/pricing/stock, and delete hardware products.
+  - **Orders & Cart Control**: View all customer orders, delivery addresses, and change statuses (`pending` -> `confirmed` -> `processing` -> `shipped` -> `delivered` -> `cancelled`).
+  - **Site Visits & Service Management**: View all service bookings, change statuses, and assign field technicians with dispatch notes.
+  - **Customer Queries**: View all contact messages and respond/mark resolved with internal resolution notes.
+- **Pre-Configured Demo Credentials**:
+  - **Store Administrator**: `admin@techmart.in` / `Admin@12345`
+  - **Verified Customer**: `customer@techmart.in` / `Customer@123`
+  - *Instant 1-Click Role Switcher included on the Navbar topbar and on `/login`!*
+
 ---
 
 ## 🏗️ Architecture

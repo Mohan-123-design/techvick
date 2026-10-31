@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User, Search, Phone, ChevronDown } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, Search, Phone, ChevronDown, ShieldCheck, LogOut } from 'lucide-react';
 import { STORE_INFO, CATEGORIES } from '../../constants';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 export default function Navbar() {
   const { cartCount } = useCart();
+  const { user, isAdmin, isAuthenticated, logout, switchRole } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
@@ -31,11 +33,12 @@ export default function Navbar() {
     { to: '/warranty', label: 'Warranty' },
     { to: '/about', label: 'About' },
     { to: '/contact', label: 'Contact' },
+    ...(isAdmin ? [{ to: '/admin', label: '👑 Admin Portal', highlight: true }] : []),
   ];
 
   return (
     <>
-      {/* Top Bar */}
+      {/* Top Bar with Role Switcher */}
       <div className="topbar">
         <div className="container topbar-inner">
           <div className="topbar-left">
@@ -44,10 +47,35 @@ export default function Navbar() {
             <span className="topbar-divider">|</span>
             <span>{STORE_INFO.workingHours}</span>
           </div>
+
           <div className="topbar-right">
-            <a href={STORE_INFO.social.whatsapp} target="_blank" rel="noreferrer">
-              WhatsApp Us
-            </a>
+            {/* Role indicator & 1-click switcher */}
+            {isAuthenticated ? (
+              <div className="topbar-user-wrap">
+                <button
+                  type="button"
+                  className={`topbar-role-badge ${isAdmin ? 'admin' : 'customer'}`}
+                  onClick={switchRole}
+                  title="Click to toggle between Admin and Customer role"
+                >
+                  {isAdmin ? '👑 Role: Admin (Click to switch)' : '👤 Role: Customer (Click to switch)'}
+                </button>
+                <span className="topbar-user-name">Hi, {user?.name?.split(' ')[0]}</span>
+                <button onClick={logout} className="topbar-logout-btn" title="Sign Out">
+                  <LogOut size={12} />
+                </button>
+              </div>
+            ) : (
+              <div className="topbar-guest-wrap">
+                <Link to="/login" className="topbar-login-link">
+                  <User size={13} /> Sign In / Demo Roles
+                </Link>
+                <span className="topbar-divider">|</span>
+                <a href={STORE_INFO.social.whatsapp} target="_blank" rel="noreferrer">
+                  WhatsApp Us
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -77,7 +105,7 @@ export default function Navbar() {
               >
                 <Link
                   to={link.to}
-                  className={`nav-link ${location.pathname === link.to ? 'nav-link-active' : ''}`}
+                  className={`nav-link ${location.pathname === link.to ? 'nav-link-active' : ''} ${link.highlight ? 'admin-nav-link' : ''}`}
                 >
                   {link.label}
                   {link.hasDropdown && <ChevronDown size={14} />}
@@ -112,13 +140,31 @@ export default function Navbar() {
             <Link to="/products" className="btn-icon nav-action" title="Search Products">
               <Search size={20} />
             </Link>
+
             <Link to="/cart" className="btn-icon nav-action cart-badge-wrap" title="View Cart">
               <ShoppingCart size={20} />
               {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </Link>
-            <Link to="/book-service" className="btn btn-primary btn-sm navbar-cta">
-              Book Service
-            </Link>
+
+            {isAdmin ? (
+              <Link to="/admin" className="btn btn-primary btn-sm admin-cta-btn">
+                <ShieldCheck size={15} /> Dashboard
+              </Link>
+            ) : (
+              <Link to="/book-service" className="btn btn-primary btn-sm navbar-cta">
+                Book Service
+              </Link>
+            )}
+
+            {!isAuthenticated ? (
+              <Link to="/login" className="btn-icon nav-action" title="Account / Login">
+                <User size={20} />
+              </Link>
+            ) : (
+              <button onClick={logout} className="btn-icon nav-action" title="Logout">
+                <LogOut size={18} />
+              </button>
+            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -131,6 +177,15 @@ export default function Navbar() {
         {isOpen && (
           <div className="mobile-menu animate-fadeIn">
             <div className="mobile-menu-inner">
+              {isAuthenticated && (
+                <div className="mobile-user-status">
+                  <span>Signed in as <strong>{user?.name}</strong></span>
+                  <button onClick={switchRole} className="mobile-switch-btn">
+                    Switch to {isAdmin ? 'Customer' : 'Admin'}
+                  </button>
+                </div>
+              )}
+
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
@@ -140,8 +195,9 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+
               <div className="mobile-categories">
-                <p className="mobile-categories-title">Categories</p>
+                <p className="mobile-categories-title">Hardware Categories</p>
                 {CATEGORIES.map((cat) => (
                   <Link
                     key={cat.id}
@@ -153,6 +209,17 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
+
+              {!isAuthenticated ? (
+                <Link to="/login" className="btn btn-secondary btn-lg" style={{ width: '100%', marginBottom: '0.75rem' }}>
+                  Sign In / Demo Roles
+                </Link>
+              ) : (
+                <button onClick={logout} className="btn btn-outline btn-lg" style={{ width: '100%', marginBottom: '0.75rem', color: '#ef4444' }}>
+                  Sign Out
+                </button>
+              )}
+
               <Link to="/book-service" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
                 Book Service Now
               </Link>

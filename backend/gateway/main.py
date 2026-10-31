@@ -457,6 +457,117 @@ async def seed_sample_data():
     await collection.insert_many(sample_products)
     print(f"✅ Seeded {len(sample_products)} sample products")
 
+    # Seed Admin and Customer Users
+    users_coll = Database.get_collection("users")
+    admin_user = await users_coll.find_one({"email": "admin@techmart.in"})
+    from common.auth import hash_password
+    if not admin_user:
+        await users_coll.insert_one({
+            "name": "Store Administrator",
+            "email": "admin@techmart.in",
+            "password": hash_password("Admin@12345"),
+            "phone": "+91 98765 00000",
+            "role": "admin",
+            "is_active": True,
+            "created_at": now,
+            "updated_at": now,
+        })
+        print("👤 Seeded Admin user: admin@techmart.in / Admin@12345")
+
+    customer_user = await users_coll.find_one({"email": "customer@techmart.in"})
+    if not customer_user:
+        await users_coll.insert_one({
+            "name": "Rahul Sharma",
+            "email": "customer@techmart.in",
+            "password": hash_password("Customer@123"),
+            "phone": "+91 98765 43210",
+            "role": "customer",
+            "is_active": True,
+            "created_at": now,
+            "updated_at": now,
+        })
+        print("👤 Seeded Demo Customer: customer@techmart.in / Customer@123")
+
+    # Seed Warranty Records
+    w_coll = Database.get_collection("warranty_records")
+    w_count = await w_coll.count_documents({})
+    if w_count == 0:
+        await w_coll.insert_many([
+            {
+                "serial_number": "TM-LAP-2024-001",
+                "customer_name": "Suresh Raina",
+                "customer_phone": "+91 98765 11223",
+                "product_name": "HP ProBook 450 G10 Business Laptop",
+                "category": "Laptops",
+                "purchase_date": "2024-02-15",
+                "expiry_date": "2026-02-15",
+                "status": "Active",
+                "coverage": "Comprehensive Hardware & On-Site Support",
+                "store_location": "TechMart Main Branch, Shop 102",
+                "invoice_number": "INV-2024-4821",
+                "created_at": now,
+                "updated_at": now,
+            },
+            {
+                "serial_number": "TM-PRN-2024-089",
+                "customer_name": "Meena Sundaram",
+                "customer_phone": "+91 98401 77654",
+                "product_name": "Epson EcoTank L3250 Wi-Fi All-in-One Printer",
+                "category": "Printers",
+                "purchase_date": "2023-11-10",
+                "expiry_date": "2025-11-10",
+                "status": "Active",
+                "coverage": "Print Head & Logic Board Warranty",
+                "store_location": "TechMart Service Hub, North Zone",
+                "invoice_number": "INV-2023-9014",
+                "created_at": now,
+                "updated_at": now,
+            },
+            {
+                "serial_number": "TM-CAM-2024-112",
+                "customer_name": "Aditya Birla Chemicals Lab",
+                "customer_phone": "+91 94440 22334",
+                "product_name": "Hikvision 8-Channel 4K ColorVu IP CCTV System",
+                "category": "CCTV & Cameras",
+                "purchase_date": "2024-01-20",
+                "expiry_date": "2027-01-20",
+                "status": "Active",
+                "coverage": "3-Year Enterprise Replacement + Annual AMC Included",
+                "store_location": "TechMart Corporate Services Desk",
+                "invoice_number": "INV-2024-1102",
+                "created_at": now,
+                "updated_at": now,
+            },
+        ])
+        print("🛡️ Seeded demo warranty records")
+
+    # Seed Sample Inquiries
+    inq_coll = Database.get_collection("contact_inquiries")
+    if await inq_coll.count_documents({}) == 0:
+        await inq_coll.insert_many([
+            {
+                "name": "Kiran Deshmukh",
+                "phone": "+91 98111 22334",
+                "email": "kiran.d@example.com",
+                "subject": "bulk_order",
+                "message": "Looking to purchase 12 custom assembled desktop PCs and a network switch for our engineering firm. Need GST invoice and installation quote.",
+                "status": "new",
+                "created_at": now,
+            },
+            {
+                "name": "Ananya Joshi",
+                "phone": "+91 98222 33445",
+                "email": "ananya.j@example.com",
+                "subject": "cctv_quote",
+                "message": "Need 8-channel IP CCTV surveillance installed at our apartment society gate and parking basement. When can a technician visit for site survey?",
+                "status": "contacted",
+                "response_note": "Called customer, site survey scheduled for Tuesday 11 AM.",
+                "created_at": now,
+            },
+        ])
+        print("📨 Seeded sample contact inquiries")
+
+
 
 if __name__ == "__main__":
     import uvicorn

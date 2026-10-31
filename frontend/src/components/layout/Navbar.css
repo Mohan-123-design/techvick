@@ -343,3 +343,106 @@
   box-shadow: 0 2px 6px rgba(236, 72, 153, 0.4);
 }
 
+/* Topbar Role Switcher */
+.topbar-user-wrap,
+.topbar-guest-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.topbar-role-badge.admin {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.topbar-role-badge.admin:hover {
+  background: rgba(245, 158, 11, 0.3);
+}
+
+.topbar-role-badge.customer {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.topbar-role-badge.customer:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.topbar-user-name {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.topbar-logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.topbar-logout-btn:hover {
+  color: #ef4444;
+}
+
+.topbar-login-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--accent-400);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.admin-nav-link {
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+}
+
+.admin-cta-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+}
+
+.mobile-user-status {
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.mobile-switch-btn {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent-400);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+

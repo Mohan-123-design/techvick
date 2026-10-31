@@ -85,7 +85,11 @@ MongoDB Atlas gives you 512MB of cloud database storage for free forever.
    - **Root Directory**: `backend`
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn gateway.main:app --host 0.0.0.0 --port $PORT`
+   - **Start Command**:
+     ```bash
+     python run.py
+     ```
+     *(Or: `uvicorn gateway.main:app --host 0.0.0.0 --port $PORT` — ensure there is NO trailing backtick ` at the end!)*
    - **Instance Type**: Select **"Free"** ($0/month).
 5. Scroll down to **"Environment Variables"** and add:
    | Key | Value | Description |

@@ -90,8 +90,9 @@ MongoDB Atlas gives you 512MB of cloud database storage for free forever.
 5. Scroll down to **"Environment Variables"** and add:
    | Key | Value | Description |
    |---|---|---|
-   | `MONGODB_URI` | `mongodb+srv://techmart_admin:...@cluster0...` | Your MongoDB Atlas connection URI from Step 2 |
-   | `DATABASE_NAME` | `techmart` | MongoDB Database Name |
+   | `PYTHON_VERSION` | `3.11.9` | **Essential**: Forces Render to use stable Python 3.11 with pre-built binary wheels |
+   | `MONGODB_URI` | `mongodb+srv://mmohan50594_db_user:BMRW2EVbNFQyRmhT@cluster0.0jgmjnk.mongodb.net/techvick?retryWrites=true&w=majority` | Your MongoDB Atlas connection URI (ensure NO spaces!) |
+   | `DATABASE_NAME` | `techvick` | MongoDB Database Name |
    | `SECRET_KEY` | `techmart-production-secret-jwt-key-2025` | Random secret key for JWT tokens |
    | `DEBUG` | `false` | Production mode |
 6. Click **"Deploy Web Service"**.

@@ -56,17 +56,27 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Startup / Shutdown
 @app.on_event("startup")
 async def startup():
-    await Database.connect()
+    try:
+        await Database.connect()
+    except Exception as e:
+        print(f"⚠️ Startup database connection error: {e}")
+
     print("🚀 TechMart API Gateway started")
     print(f"📖 API Docs: http://localhost:{settings.GATEWAY_PORT}/docs")
 
-    # Seed sample data if database is empty
-    await seed_sample_data()
+    # Seed sample data if database is reachable
+    try:
+        await seed_sample_data()
+    except Exception as e:
+        print(f"⚠️ Initial data seed skipped/failed: {e}")
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    await Database.disconnect()
+    try:
+        await Database.disconnect()
+    except Exception as e:
+        print(f"⚠️ Shutdown disconnect error: {e}")
 
 
 # Include all service routers
@@ -99,7 +109,11 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "service": "api-gateway"}
+    return {
+        "status": "healthy",
+        "service": "api-gateway",
+        "database": "connected" if getattr(Database, "is_connected", False) else "disconnected",
+    }
 
 
 # ------------------------------------------------------------------
@@ -107,10 +121,18 @@ async def health():
 # ------------------------------------------------------------------
 async def seed_sample_data():
     """Insert demo products if the database is empty."""
-    collection = Database.get_collection("products")
-    count = await collection.count_documents({})
-    if count > 0:
-        print(f"📦 Database already has {count} products, skipping seed.")
+    try:
+        if not getattr(Database, "is_connected", False) or Database.get_db() is None:
+            print("ℹ️ Skipping seed: Database not connected. Check MongoDB Atlas Network Access.")
+            return
+
+        collection = Database.get_collection("products")
+        count = await collection.count_documents({})
+        if count > 0:
+            print(f"📦 Database already has {count} products, skipping seed.")
+            return
+    except Exception as e:
+        print(f"⚠️ MongoDB check failed during seed: {e}")
         return
 
     from common.utils import utc_now

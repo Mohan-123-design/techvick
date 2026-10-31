@@ -1,3 +1,4 @@
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from .config import settings
 
@@ -7,19 +8,35 @@ class Database:
 
     client: AsyncIOMotorClient = None
     db = None
+    is_connected: bool = False
 
     @classmethod
     async def connect(cls):
         """Connect to MongoDB."""
-        cls.client = AsyncIOMotorClient(settings.MONGODB_URI)
-        cls.db = cls.client[settings.DATABASE_NAME]
-        print(f"✅ Connected to MongoDB: {settings.DATABASE_NAME}")
+        try:
+            ca = certifi.where()
+            cls.client = AsyncIOMotorClient(
+                settings.MONGODB_URI,
+                tlsCAFile=ca,
+                serverSelectionTimeoutMS=5000,
+                connectTimeoutMS=5000,
+            )
+            cls.db = cls.client[settings.DATABASE_NAME]
+            # Quick ping to verify connectivity
+            await cls.client.admin.command("ping")
+            cls.is_connected = True
+            print(f"✅ Connected to MongoDB: {settings.DATABASE_NAME}")
+        except Exception as e:
+            cls.is_connected = False
+            print(f"⚠️ MongoDB connection warning: {e}")
+            print("ℹ️ The server will continue running. Check your MongoDB Atlas Network Access and credentials.")
 
     @classmethod
     async def disconnect(cls):
         """Disconnect from MongoDB."""
         if cls.client:
             cls.client.close()
+            cls.is_connected = False
             print("❌ Disconnected from MongoDB")
 
     @classmethod

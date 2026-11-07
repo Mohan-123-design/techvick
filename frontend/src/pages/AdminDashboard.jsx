@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Package, ShoppingCart, Wrench, MessageSquare, Shield,
-  Plus, Edit, Trash2, Search, CheckCircle2, Clock, AlertCircle, Phone,
-  Mail, MapPin, Eye, X, RefreshCw, Filter, ArrowUpRight, DollarSign,
-  UserCheck, ShieldAlert
+  Plus, Edit, Trash2, Search, Phone,
+  Mail, MapPin, Eye, X, RefreshCw,
+  UserCheck
 } from 'lucide-react';
 import { productsApi, ordersApi, servicesApi, usersApi } from '../utils/api';
-import { CATEGORIES, STORE_INFO } from '../constants';
+import { CATEGORIES } from '../constants';
 import toast from 'react-hot-toast';
 import './AdminDashboard.css';
 
@@ -296,11 +296,11 @@ export default function AdminDashboard() {
         <div className="container admin-header-inner">
           <div className="admin-header-title">
             <span className="admin-badge">
-              <ShieldAlert size={14} /> Master Store Management Portal
+              <Shield size={14} /> Techvick Computers • Tatabad Store Portal
             </span>
-            <h1>TechMart Administrator Control Center</h1>
+            <h1>Store Management & Customer Requests</h1>
             <p>
-              Full Role-Based Administrative Control: Products CRUD, Customer Orders & Cart Data, Doorstep Site Visits, and User Queries.
+              Dedicated Store Staff Portal: Service Bookings, Customer Inquiries & Quotes, Order Fulfillment, and Real Market Inventory.
             </p>
           </div>
           <button className="btn btn-secondary btn-sm refresh-btn" onClick={loadDashboardData} disabled={loading}>
@@ -381,7 +381,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="metric-info">
                   <span className="metric-label">Total Customer Orders</span>
-                  <span className="metric-val">{orders.length} Orders</span>
+                  <span className="metric-val">{orders.length} Orders (₹{totalRevenue.toLocaleString('en-IN')})</span>
                   <span className="metric-sub">{pendingOrders} Pending Fulfillment</span>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 """
-TechMart API Gateway
-====================
+Techvick Computers API Gateway
+==============================
 Central entry point that aggregates all microservices.
 For development: runs all services in a single process.
 For production: each service runs independently and the gateway proxies requests.
@@ -24,11 +24,11 @@ from services.order_service.routes import router as order_router
 from services.service_request.routes import router as service_router
 
 app = FastAPI(
-    title="TechMart API Gateway",
+    title="Techvick Computers API Gateway",
     version=settings.APP_VERSION,
     description=(
-        "🖥️ TechMart - Your Trusted Electronics Sales & Service Partner. "
-        "Laptops | Desktops | Servers | Printers | CCTV | Accessories | Networking"
+        "🖥️ Techvick Computers - Taking Care of Your PC. Sales & Service. "
+        "Laptops | Desktops | Apple iMac | Printers | CCTV | Custom PC Builds | Upgrades"
     ),
     docs_url="/docs",
     redoc_url="/redoc",
@@ -61,7 +61,7 @@ async def startup():
     except Exception as e:
         print(f"⚠️ Startup database connection error: {e}")
 
-    print("🚀 TechMart API Gateway started")
+    print("🚀 Techvick Computers API Gateway started")
     print(f"📖 API Docs: http://localhost:{settings.GATEWAY_PORT}/docs")
 
     # Seed sample data if database is reachable
@@ -90,9 +90,9 @@ app.include_router(service_router)
 @app.get("/")
 async def root():
     return {
-        "name": "TechMart API",
+        "name": "Techvick Computers API",
         "version": settings.APP_VERSION,
-        "description": "Electronics Sales & Service Store",
+        "description": "Techvick Computers Sales & Service Store - Taking Care of Your PC",
         "categories": [c["name"] for c in PRODUCT_CATEGORIES],
         "services": [s["name"] for s in SERVICE_TYPES],
         "endpoints": {
@@ -221,7 +221,7 @@ async def seed_sample_data():
             "name": "Custom Assembled Desktop PC - i5 Gaming Build",
             "description": "Custom-built desktop with Intel i5, 16GB RAM, 512GB SSD, GT 1030 GPU. Perfect for gaming and creative work.",
             "category": "desktops",
-            "brand": "TechMart Custom",
+            "brand": "Techvick Custom",
             "price": 42500.0,
             "original_price": 49990.0,
             "stock": 8,
@@ -481,34 +481,34 @@ async def seed_sample_data():
 
     # Seed Admin and Customer Users
     users_coll = Database.get_collection("users")
-    admin_user = await users_coll.find_one({"email": "admin@techmart.in"})
+    admin_user = await users_coll.find_one({"email": "techvickcomputers@gmail.com"})
     from common.auth import hash_password
     if not admin_user:
         await users_coll.insert_one({
-            "name": "Store Administrator",
-            "email": "admin@techmart.in",
-            "password": hash_password("Admin@12345"),
-            "phone": "+91 98765 00000",
+            "name": "Techvick Store Manager",
+            "email": "techvickcomputers@gmail.com",
+            "password": hash_password("Techvick@123"),
+            "phone": "+91 94433 87654",
             "role": "admin",
             "is_active": True,
             "created_at": now,
             "updated_at": now,
         })
-        print("👤 Seeded Admin user: admin@techmart.in / Admin@12345")
+        print("👤 Seeded Store Manager: techvickcomputers@gmail.com / Techvick@123")
 
-    customer_user = await users_coll.find_one({"email": "customer@techmart.in"})
+    customer_user = await users_coll.find_one({"email": "customer@techvick.in"})
     if not customer_user:
         await users_coll.insert_one({
-            "name": "Rahul Sharma",
-            "email": "customer@techmart.in",
+            "name": "Coimbatore Customer",
+            "email": "customer@techvick.in",
             "password": hash_password("Customer@123"),
-            "phone": "+91 98765 43210",
+            "phone": "+91 98422 12345",
             "role": "customer",
             "is_active": True,
             "created_at": now,
             "updated_at": now,
         })
-        print("👤 Seeded Demo Customer: customer@techmart.in / Customer@123")
+        print("👤 Seeded Demo Customer: customer@techvick.in")
 
     # Seed Warranty Records
     w_coll = Database.get_collection("warranty_records")
@@ -516,47 +516,47 @@ async def seed_sample_data():
     if w_count == 0:
         await w_coll.insert_many([
             {
-                "serial_number": "TM-LAP-2024-001",
-                "customer_name": "Suresh Raina",
-                "customer_phone": "+91 98765 11223",
-                "product_name": "HP ProBook 450 G10 Business Laptop",
+                "serial_number": "TVC-LAP-2024-001",
+                "customer_name": "Karthik Subramanian",
+                "customer_phone": "+91 94433 11223",
+                "product_name": "Lenovo ThinkPad E14 Gen 5 AMD Ryzen 7",
                 "category": "Laptops",
                 "purchase_date": "2024-02-15",
-                "expiry_date": "2026-02-15",
+                "expiry_date": "2027-02-15",
                 "status": "Active",
-                "coverage": "Comprehensive Hardware & On-Site Support",
-                "store_location": "TechMart Main Branch, Shop 102",
-                "invoice_number": "INV-2024-4821",
+                "coverage": "3-Year Comprehensive Store & On-Site Warranty",
+                "store_location": "Techvick Computers - Tatabad Main Store, Coimbatore",
+                "invoice_number": "INV-TVC-2024-0104",
                 "created_at": now,
                 "updated_at": now,
             },
             {
-                "serial_number": "TM-PRN-2024-089",
+                "serial_number": "TVC-PRN-2024-089",
                 "customer_name": "Meena Sundaram",
                 "customer_phone": "+91 98401 77654",
-                "product_name": "Epson EcoTank L3250 Wi-Fi All-in-One Printer",
+                "product_name": "Epson EcoTank L3210 All-in-One Ink Tank Printer",
                 "category": "Printers",
-                "purchase_date": "2023-11-10",
-                "expiry_date": "2025-11-10",
+                "purchase_date": "2024-04-10",
+                "expiry_date": "2025-04-10",
                 "status": "Active",
                 "coverage": "Print Head & Logic Board Warranty",
-                "store_location": "TechMart Service Hub, North Zone",
-                "invoice_number": "INV-2023-9014",
+                "store_location": "Techvick Computers - Tatabad Main Store, Coimbatore",
+                "invoice_number": "INV-TVC-2024-0489",
                 "created_at": now,
                 "updated_at": now,
             },
             {
-                "serial_number": "TM-CAM-2024-112",
-                "customer_name": "Aditya Birla Chemicals Lab",
+                "serial_number": "TVC-CAM-2024-112",
+                "customer_name": "Tatabad Academy",
                 "customer_phone": "+91 94440 22334",
-                "product_name": "Hikvision 8-Channel 4K ColorVu IP CCTV System",
+                "product_name": "CP PLUS 4-Channel 2.4MP Full HD CCTV Surveillance Kit",
                 "category": "CCTV & Cameras",
                 "purchase_date": "2024-01-20",
-                "expiry_date": "2027-01-20",
+                "expiry_date": "2026-01-20",
                 "status": "Active",
-                "coverage": "3-Year Enterprise Replacement + Annual AMC Included",
-                "store_location": "TechMart Corporate Services Desk",
-                "invoice_number": "INV-2024-1102",
+                "coverage": "2-Year Full Hardware Replacement & Site Support",
+                "store_location": "Techvick Computers - Tatabad Main Store, Coimbatore",
+                "invoice_number": "INV-TVC-2024-1102",
                 "created_at": now,
                 "updated_at": now,
             },

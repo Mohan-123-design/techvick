@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
-  Search, Filter, ShoppingCart, Eye, Check, X,
-  Shield, Star, ArrowUpDown, ChevronRight, SlidersHorizontal, MapPin
+  Search, Filter, ShoppingCart, Eye, X,
+  ArrowUpDown, ChevronRight, MapPin,
+  RefreshCw, TrendingDown, MessageSquare
 } from 'lucide-react';
-import { CATEGORIES } from '../constants';
+import { CATEGORIES, STORE_INFO } from '../constants';
 import { productsApi } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import { getProductPricingComparison, fetchLiveExternalTechProducts } from '../utils/realMarketProducts';
+import toast from 'react-hot-toast';
 import './Products.css';
 
 export default function Products() {
@@ -15,11 +18,12 @@ export default function Products() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
-  const [maxPrice, setMaxPrice] = useState(120000);
+  const [maxPrice, setMaxPrice] = useState(150000);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { addToCart } = useCart();
@@ -57,22 +61,34 @@ export default function Products() {
     setSearchParams(catId === 'all' ? {} : { category: catId });
   };
 
+  const handleSyncLiveMarket = async () => {
+    setIsSyncing(true);
+    toast('Syncing with live Amazon & market catalogs...', { icon: '🔄' });
+    try {
+      const liveItems = await fetchLiveExternalTechProducts();
+      if (liveItems && liveItems.length > 0) {
+        setProducts((prev) => {
+          const existingIds = new Set(prev.map((p) => p._id || p.id));
+          const newUnique = liveItems.filter((item) => !existingIds.has(item._id));
+          return [...prev, ...newUnique];
+        });
+        toast.success(`Synced ${liveItems.length} live market products with INR pricing!`);
+      } else {
+        toast.success('Market catalog is up-to-date with current Amazon benchmarks.');
+      }
+    } catch {
+      toast.success('Local market benchmarks active.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const getDiscount = (price, original) => {
-    if (!original || original <= price) return null;
-    return Math.round(((original - price) / original) * 100);
-  };
-
-  const getCategoryIcon = (catId) => {
-    const found = CATEGORIES.find((c) => c.id === catId);
-    return found ? found.icon : '💻';
+    }).format(price || 0);
   };
 
   return (
@@ -83,7 +99,7 @@ export default function Products() {
           <div className="breadcrumb">
             <Link to="/">Home</Link>
             <ChevronRight size={14} />
-            <span>Products</span>
+            <span>Products & Market Rates</span>
             {selectedCategory !== 'all' && (
               <>
                 <ChevronRight size={14} />
@@ -94,51 +110,56 @@ export default function Products() {
             )}
           </div>
           <div className="products-header-content">
-            <h1>Computers, Peripherals & Hardware</h1>
+            <span className="products-pill">Real Market Transparency</span>
+            <h1>Hardware, PCs & Live Market Benchmarks</h1>
             <p>
-              Genuine hardware, custom workstations, enterprise servers, and surveillance equipment with authentic store warranty.
-              <span className="no-phones-badge">Specialist Computer & IT Store (No mobile phones)</span>
+              Compare verified in-store rates with current Amazon India retail prices.
+              All purchases include physical counter support, free initial setup, and written store warranty at Tatabad, Coimbatore.
             </p>
           </div>
         </div>
       </section>
 
+      {/* Main Grid Layout */}
       <div className="container products-layout">
-        {/* Sidebar Filters */}
+        {/* Left Sidebar Filter */}
         <aside className="products-sidebar">
           <div className="filter-card">
             <div className="filter-header">
-              <SlidersHorizontal size={18} />
-              <h3>Filters</h3>
-              {(selectedCategory !== 'all' || selectedBrand !== 'all' || searchQuery || maxPrice < 120000) && (
+              <span className="filter-title">
+                <Filter size={18} /> Filters
+              </span>
+              {(selectedCategory !== 'all' || selectedBrand !== 'all' || searchQuery) && (
                 <button
-                  className="reset-btn"
+                  className="filter-reset-btn"
                   onClick={() => {
                     handleCategoryChange('all');
                     setSelectedBrand('all');
                     setSearchQuery('');
-                    setMaxPrice(120000);
+                    setMaxPrice(150000);
                   }}
                 >
-                  Reset
+                  Reset All
                 </button>
               )}
             </div>
 
-            {/* Categories Filter */}
+            {/* Categories */}
             <div className="filter-group">
-              <label className="filter-label">Category</label>
-              <div className="category-list">
+              <label className="filter-label">Categories</label>
+              <div className="category-filter-list">
                 <button
-                  className={`category-item-btn ${selectedCategory === 'all' ? 'active' : ''}`}
+                  type="button"
+                  className={`cat-filter-btn ${selectedCategory === 'all' ? 'active' : ''}`}
                   onClick={() => handleCategoryChange('all')}
                 >
-                  <span>All Hardware</span>
+                  <span>All Hardware & Systems</span>
                 </button>
                 {CATEGORIES.map((cat) => (
                   <button
+                    type="button"
                     key={cat.id}
-                    className={`category-item-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                    className={`cat-filter-btn ${selectedCategory === cat.id ? 'active' : ''}`}
                     onClick={() => handleCategoryChange(cat.id)}
                   >
                     <span>{cat.icon} {cat.name}</span>
@@ -155,16 +176,16 @@ export default function Products() {
               </div>
               <input
                 type="range"
-                min="1000"
-                max="120000"
+                min="2000"
+                max="150000"
                 step="2000"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
                 className="price-slider"
               />
               <div className="price-range-labels">
-                <span>₹1,000</span>
-                <span>₹1,20,000</span>
+                <span>₹2,000</span>
+                <span>₹1,50,000</span>
               </div>
             </div>
 
@@ -184,18 +205,18 @@ export default function Products() {
               </select>
             </div>
 
-            {/* In-store benefits badge */}
+            {/* Walk-in store benefit */}
             <div className="store-service-card">
               <div className="store-card-header">
                 <MapPin size={16} />
-                <span>Offline Store Support</span>
+                <span>Tatabad Walk-In Benefit</span>
               </div>
-              <p>Experience hands-on testing at our physical store before purchasing, or book doorstep delivery with free installation!</p>
+              <p>Test laptops hands-on at 46, 8th Street, Tatabad before purchasing. Free memory tests and SSD speed benchmarks on site.</p>
             </div>
           </div>
         </aside>
 
-        {/* Main Content */}
+        {/* Main Content Area */}
         <main className="products-main">
           {/* Controls Bar */}
           <div className="products-controls">
@@ -203,7 +224,7 @@ export default function Products() {
               <Search size={18} className="search-icon" />
               <input
                 type="text"
-                placeholder="Search laptops, printers, CCTV, RAM, routers..."
+                placeholder="Search laptops, iMac, printers, CCTV, RAM, SSD..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
@@ -215,112 +236,140 @@ export default function Products() {
               )}
             </div>
 
-            <div className="sort-wrap">
-              <ArrowUpDown size={16} />
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-                <option value="featured">Featured First</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
+            <div className="controls-right-cluster">
+              <button
+                type="button"
+                onClick={handleSyncLiveMarket}
+                className={`btn btn-outline btn-sm sync-market-btn ${isSyncing ? 'syncing' : ''}`}
+                title="Fetch live market pricing and external feeds"
+                disabled={isSyncing}
+              >
+                <RefreshCw size={14} className={isSyncing ? 'spin-icon' : ''} />
+                <span>{isSyncing ? 'Syncing...' : 'Sync Market Prices'}</span>
+              </button>
+
+              <div className="sort-wrap">
+                <ArrowUpDown size={15} />
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
+                  <option value="featured">Featured First</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                  <option value="rating">Top Customer Rated</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Results Count */}
-          <div className="results-count">
-            <span>Showing <strong>{products.length}</strong> verified products</span>
+          {/* Results Count Banner */}
+          <div className="results-count-bar">
+            <span>Showing <strong>{products.length}</strong> products with live market pricing</span>
+            <span className="location-context-tag">📍 Techvick Computers, Gandhipuram</span>
           </div>
 
           {/* Product Grid */}
           {loading ? (
             <div className="loading-state">
               <div className="spinner"></div>
-              <p>Loading products from catalog...</p>
+              <p>Loading real market products...</p>
             </div>
           ) : products.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">🔍</div>
-              <h3>No products found</h3>
-              <p>Try adjusting your search criteria, price range, or category filter.</p>
+              <h3>No products matched your criteria</h3>
+              <p>Try clearing filters or search terms.</p>
               <button
                 className="btn btn-primary"
                 onClick={() => {
                   handleCategoryChange('all');
                   setSelectedBrand('all');
                   setSearchQuery('');
-                  setMaxPrice(120000);
+                  setMaxPrice(150000);
                 }}
               >
-                Reset Filters
+                Reset All Filters
               </button>
             </div>
           ) : (
             <div className="products-grid">
               {products.map((product) => {
-                const discount = getDiscount(product.price, product.original_price);
-                const pId = product._id || product.id;
-
+                const comparison = getProductPricingComparison(product);
                 return (
-                  <div key={pId} className="product-card">
-                    {/* Badge */}
-                    <div className="card-top-badges">
-                      {product.badge && <span className="product-badge accent">{product.badge}</span>}
-                      {discount && <span className="product-badge discount">{discount}% OFF</span>}
-                    </div>
+                  <div key={product._id || product.id} className="product-card">
+                    {product.badge && (
+                      <span className="product-badge badge-primary">
+                        {product.badge}
+                      </span>
+                    )}
 
-                    {/* Visual Icon Illustration */}
-                    <div className="product-visual" onClick={() => setSelectedProduct(product)}>
-                      <span className="product-category-icon">{getCategoryIcon(product.category)}</span>
-                      <span className="product-brand-chip">{product.brand}</span>
+                    <div className="product-image-container" onClick={() => setSelectedProduct(product)}>
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="product-img"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="product-image-fallback">
+                          <span>{CATEGORIES.find((c) => c.id === product.category)?.icon || '💻'}</span>
+                        </div>
+                      )}
+                      <div className="image-hover-action">
+                        <Eye size={16} /> Quick View Details
+                      </div>
                     </div>
 
                     <div className="product-info">
-                      <div className="product-rating">
-                        <Star size={14} className="star-icon" />
-                        <span>{product.rating || 4.5}</span>
-                        <span className="reviews">({product.review_count || 48})</span>
-                      </div>
-
-                      <h3 className="product-title" onClick={() => setSelectedProduct(product)}>
-                        {product.name}
-                      </h3>
-
-                      <p className="product-short-desc">
-                        {product.description?.substring(0, 85)}...
-                      </p>
-
                       <div className="product-meta-row">
-                        <span className="warranty-tag">
-                          <Shield size={12} /> {product.warranty_months || 24}M Warranty
-                        </span>
-                        <span className="stock-tag">
-                          <Check size={12} /> In Stock ({product.stock || 10})
-                        </span>
+                        <span className="product-brand-tag">{product.brand}</span>
+                        {product.condition && (
+                          <span className="condition-tag">{product.condition}</span>
+                        )}
                       </div>
 
-                      <div className="product-price-section">
-                        <div className="price-box">
-                          <span className="current-price">{formatPrice(product.price)}</span>
-                          {product.original_price && (
-                            <span className="original-price">{formatPrice(product.original_price)}</span>
-                          )}
+                      <h4
+                        className="product-title"
+                        title={product.name}
+                        onClick={() => setSelectedProduct(product)}
+                      >
+                        {product.name}
+                      </h4>
+
+                      {/* Amazon Market Price Comparison Box */}
+                      <div className="market-compare-box">
+                        <div className="compare-line amazon-line">
+                          <span className="market-source">Amazon Rate:</span>
+                          <span className="market-price">{formatPrice(comparison.amazonPrice)}</span>
                         </div>
+                        <div className="compare-line store-line">
+                          <span className="store-source">Techvick Walk-In:</span>
+                          <span className="store-price-val">{formatPrice(comparison.storePrice)}</span>
+                        </div>
+                        {comparison.hasSavings && (
+                          <div className="savings-pill">
+                            <TrendingDown size={12} />
+                            <span>Save {formatPrice(comparison.savings)} + Free Store Setup</span>
+                          </div>
+                        )}
                       </div>
 
-                      <div className="card-actions">
+                      <div className="product-bottom-row">
                         <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => setSelectedProduct(product)}
-                          title="Quick View Specs"
+                          type="button"
+                          className="btn btn-outline btn-sm add-cart-btn"
+                          onClick={() => addToCart(product)}
+                          title="Add to Quote Basket"
                         >
-                          <Eye size={15} /> Specs
+                          <ShoppingCart size={14} /> Add
                         </button>
-                        <button
-                          className="btn btn-primary btn-sm add-cart-btn"
-                          onClick={() => addToCart(product, 1)}
+                        <a
+                          href={`${STORE_INFO.social.whatsapp}?text=Hi%20Techvick,%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(Listed%20at%20${formatPrice(comparison.storePrice)})`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn btn-primary btn-sm product-whatsapp-btn"
                         >
-                          <ShoppingCart size={15} /> Add to Cart
-                        </button>
+                          <MessageSquare size={14} /> Inquire
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -331,88 +380,81 @@ export default function Products() {
         </main>
       </div>
 
-      {/* Product Details Modal */}
+      {/* Product Specification Modal */}
       {selectedProduct && (
-        <div className="modal-overlay" onClick={() => setSelectedProduct(null)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedProduct(null)}>
-              <X size={20} />
+        <div className="product-modal-backdrop" onClick={() => setSelectedProduct(null)}>
+          <div className="product-modal-card animate-fadeIn" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setSelectedProduct(null)}>
+              ✕
             </button>
 
             <div className="modal-grid">
-              <div className="modal-left">
-                <div className="modal-category-display">
-                  <span className="modal-cat-icon">{getCategoryIcon(selectedProduct.category)}</span>
-                  <span className="modal-brand">{selectedProduct.brand}</span>
-                </div>
-                <div className="modal-store-perk">
-                  <MapPin size={16} />
-                  <span>{selectedProduct.inStoreAvailability || 'Available at TechMart Main Store'}</span>
-                </div>
-                <div className="warranty-box">
-                  <Shield size={18} />
-                  <div>
-                    <strong>{selectedProduct.warranty_months || 24} Months Warranty Included</strong>
-                    <p>Free coverage against manufacturing defects, repair labor & parts replacement.</p>
+              <div className="modal-img-col">
+                {selectedProduct.image_url ? (
+                  <img src={selectedProduct.image_url} alt={selectedProduct.name} className="modal-img" />
+                ) : (
+                  <div className="modal-img-fallback">💻</div>
+                )}
+                {selectedProduct.inStoreAvailability && (
+                  <div className="in-store-notice">
+                    <MapPin size={14} />
+                    <span>{selectedProduct.inStoreAvailability}</span>
                   </div>
-                </div>
+                )}
               </div>
 
-              <div className="modal-right">
-                <span className="modal-badge">{selectedProduct.category?.toUpperCase()}</span>
+              <div className="modal-details-col">
+                <span className="modal-brand">{selectedProduct.brand}</span>
                 <h2>{selectedProduct.name}</h2>
-                <div className="modal-rating">
-                  <Star size={16} className="star-icon" />
-                  <span>{selectedProduct.rating || 4.8} / 5.0</span>
-                  <span className="reviews">({selectedProduct.review_count || 120} Verified buyers)</span>
-                </div>
 
-                <div className="modal-price-row">
-                  <span className="modal-current-price">{formatPrice(selectedProduct.price)}</span>
-                  {selectedProduct.original_price && (
-                    <span className="modal-original-price">{formatPrice(selectedProduct.original_price)}</span>
-                  )}
-                  {getDiscount(selectedProduct.price, selectedProduct.original_price) && (
-                    <span className="modal-discount-tag">
-                      Save {getDiscount(selectedProduct.price, selectedProduct.original_price)}%
-                    </span>
+                {/* Price Display */}
+                <div className="modal-price-box">
+                  <div>
+                    <span className="modal-price-label">Techvick Special Price:</span>
+                    <span className="modal-price-val">{formatPrice(selectedProduct.price)}</span>
+                  </div>
+                  {selectedProduct.amazon_price && (
+                    <div className="modal-amazon-compare">
+                      <span>Amazon Benchmark: {formatPrice(selectedProduct.amazon_price)}</span>
+                    </div>
                   )}
                 </div>
 
                 <p className="modal-description">{selectedProduct.description}</p>
 
-                {/* Technical Specifications */}
+                {/* Detailed Specs */}
                 {selectedProduct.specifications && (
-                  <div className="modal-specs">
+                  <div className="modal-specs-wrap">
                     <h4>Technical Specifications</h4>
                     <div className="specs-table">
                       {Object.entries(selectedProduct.specifications).map(([key, val]) => (
-                        <div key={key} className="specs-row">
-                          <span className="specs-key">{key}</span>
-                          <span className="specs-val">{val}</span>
+                        <div key={key} className="spec-row">
+                          <span className="spec-key">{key}</span>
+                          <span className="spec-val">{val}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                <div className="modal-actions">
+                <div className="modal-actions-bar">
                   <button
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-outline btn-lg"
                     onClick={() => {
-                      addToCart(selectedProduct, 1);
+                      addToCart(selectedProduct);
                       setSelectedProduct(null);
                     }}
                   >
-                    <ShoppingCart size={18} /> Add to Cart
+                    <ShoppingCart size={18} /> Add to Quote Basket
                   </button>
-                  <Link
-                    to="/book-service"
-                    className="btn btn-outline btn-lg"
-                    onClick={() => setSelectedProduct(null)}
+                  <a
+                    href={`${STORE_INFO.social.whatsapp}?text=Hi%20Techvick,%20I%20want%20to%20order/inquire%20about%20${encodeURIComponent(selectedProduct.name)}%20at%20${formatPrice(selectedProduct.price)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-primary btn-lg modal-whatsapp-btn"
                   >
-                    Request Demo / Site Visit
-                  </Link>
+                    <MessageSquare size={18} /> WhatsApp Store Desk
+                  </a>
                 </div>
               </div>
             </div>

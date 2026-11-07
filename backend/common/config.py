@@ -8,19 +8,21 @@ class Settings:
     """Application configuration loaded from environment variables."""
 
     # Application
-    APP_NAME: str = os.getenv("APP_NAME", "TechMart")
+    APP_NAME: str = os.getenv("APP_NAME", "Techvick Computers")
     APP_VERSION: str = os.getenv("APP_VERSION", "1.0.0")
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
 
     # MongoDB
     MONGODB_URI: str = os.getenv(
-        "MONGODB_URI", "mongodb://localhost:27017"
+        "MONGODB_URI",
+        "mongodb+srv://mmohan50594_db_user:BMRW2EVbNFQyRmhT@cluster0.0jgmjnk.mongodb.net/techvick?retryWrites=true&w=majority"
     )
-    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "techmart")
+    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "techvick")
 
     # JWT Auth
     SECRET_KEY: str = os.getenv(
-        "SECRET_KEY", "techmart-secret-key-change-in-production"
+        "SECRET_KEY",
+        "techvick_sec_9d8a3f1b4c7e62a05d8f2b1c4e7a0983bfd1e2a3c4b5e6f7a8b9c0d1e2f3a4b5"
     )
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(

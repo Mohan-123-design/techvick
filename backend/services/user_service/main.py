@@ -9,7 +9,7 @@ from common.database import Database
 from .routes import router
 
 app = FastAPI(
-    title="TechMart - User Service",
+    title="Techvick Computers - User & Inquiry Service",
     version=settings.APP_VERSION,
     description="Handles user authentication, profiles, and contact inquiries",
 )

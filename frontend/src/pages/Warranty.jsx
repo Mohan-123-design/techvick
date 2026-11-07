@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield, Search, CheckCircle2, AlertTriangle, Clock,
-  FileText, MapPin, Phone, HelpCircle, ArrowRight, X, Sparkles
+  FileText, MapPin, X, Sparkles
 } from 'lucide-react';
 import { servicesApi } from '../utils/api';
 import toast from 'react-hot-toast';
@@ -23,10 +23,10 @@ export default function Warranty() {
   });
 
   const sampleSerials = [
-    { label: 'HP Laptop (Active)', code: 'TM-LAP-2024-001' },
-    { label: 'Epson Printer (Active)', code: 'TM-PRN-2024-089' },
-    { label: 'CCTV Setup (3-Yr Active)', code: 'TM-CAM-2024-112' },
-    { label: 'Dell Laptop (Expired)', code: 'TM-EXP-2022-999' },
+    { label: 'HP Laptop (Active)', code: 'TVC-LAP-2024-001' },
+    { label: 'Epson Printer (Active)', code: 'TVC-PRN-2024-089' },
+    { label: 'CCTV Setup (Active)', code: 'TVC-CAM-2024-112' },
+    { label: 'Dell Laptop (Expired)', code: 'TVC-EXP-2022-999' },
   ];
 
   const handleSearch = async (searchQuery) => {
@@ -73,7 +73,7 @@ export default function Warranty() {
             </span>
             <h1>Check Product Warranty & Claim Coverage</h1>
             <p>
-              Instantly verify your device warranty status using your TechMart serial number,
+              Instantly verify your device warranty status using your Techvick serial number,
               invoice number, or registered phone number.
             </p>
 
@@ -325,7 +325,7 @@ export default function Warranty() {
       <section className="section warranty-policies">
         <div className="container">
           <div className="section-header">
-            <h2>TechMart Warranty & Guarantee Standards</h2>
+            <h2>Techvick Computers Warranty & Guarantee Standards</h2>
             <p>We pride ourselves on transparent, hassle-free warranty backing</p>
           </div>
 
@@ -347,7 +347,7 @@ export default function Warranty() {
               </div>
               <h4>90-Day Post-Repair Guarantee</h4>
               <p>
-                Every chip-level repair, motherboard fix, and component replacement completed by TechMart
+                Every chip-level repair, motherboard fix, and component replacement completed by Techvick Computers
                 is protected with our unconditional 90-day service warranty.
               </p>
             </div>

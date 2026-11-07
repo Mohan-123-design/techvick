@@ -95,7 +95,7 @@ export default function Cart() {
             </div>
             <h1>Order Confirmed!</h1>
             <p className="order-sub">
-              Thank you for shopping with TechMart. Your order has been placed into our fulfillment system.
+              Thank you for choosing Techvick Computers. Your order request has been received at our Tatabad, Gandhipuram counter.
             </p>
 
             <div className="order-meta-box">

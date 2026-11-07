@@ -1,4 +1,6 @@
-# 🖥️ TechMart — Computer, Peripherals & Security Sales & Service Platform
+# 🖥️ Techvick Computers — Sales & Service Platform
+> **Taking Care of Your PC • Sales & Service**  
+> 📍 46, 8th Street, Tatabad, Gandhipuram, Coimbatore - 641012 | 📞 +91 94433 87654 / +91 94423 87654
 
 [![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20FastAPI%20%7C%20MongoDB-blue.svg)](#architecture)
 [![Architecture](https://img.shields.io/badge/Architecture-Microservices%20with%20API%20Gateway-green.svg)](#microservices-architecture)
@@ -45,10 +47,9 @@ A full-stack, enterprise-grade e-commerce and IT service management platform tai
   - **Orders & Cart Control**: View all customer orders, delivery addresses, and change statuses (`pending` -> `confirmed` -> `processing` -> `shipped` -> `delivered` -> `cancelled`).
   - **Site Visits & Service Management**: View all service bookings, change statuses, and assign field technicians with dispatch notes.
   - **Customer Queries**: View all contact messages and respond/mark resolved with internal resolution notes.
-- **Pre-Configured Demo Credentials**:
-  - **Store Administrator**: `admin@techmart.in` / `Admin@12345`
-  - **Verified Customer**: `customer@techmart.in` / `Customer@123`
-  - *Instant 1-Click Role Switcher included on the Navbar topbar and on `/login`!*
+- **Store Access Credentials**:
+  - **Store Management / Admin**: `techvickcomputers@gmail.com` / `Techvick@123`
+  - **Customer Flow**: Zero login required! Customers browse, shop, and book services freely.
 
 ---
 

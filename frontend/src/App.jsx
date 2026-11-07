@@ -7,6 +7,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 
 // Context
+import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -40,61 +41,67 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3500,
-              style: {
-                background: '#111827',
-                color: '#f9fafb',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px',
-                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)',
-              },
-            }}
-          />
-          <div className="app-layout">
-            <Navbar />
-            <main className="main-content">
-              <Routes>
-                {/* End User / Customer Public Pages */}
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/book-service" element={<BookService />} />
-                <Route path="/warranty" element={<Warranty />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/login" element={<Login />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3500,
+                style: {
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '12px',
+                  boxShadow: 'var(--shadow-lg)',
+                },
+              }}
+            />
+            <div className="app-layout">
+              <Navbar />
+              <main className="main-content">
+                <Routes>
+                  {/* Public Customer View (Zero-login frictionless experience) */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/book-service" element={<BookService />} />
+                  <Route path="/warranty" element={<Warranty />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/cart" element={<Cart />} />
 
-                {/* Role-Based Protected Admin Portal */}
-                <Route
-                  path="/admin"
-                  element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/*"
-                  element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  }
-                />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+                  {/* Store Staff Portal (Separate from Customer Side) */}
+                  <Route path="/store-login" element={<Login />} />
+                  <Route path="/store-portal" element={<Login />} />
+                  <Route path="/login" element={<Login />} />
+
+                  {/* Role-Based Protected Store Staff Dashboard */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <AdminDashboard />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/*"
+                    element={
+                      <AdminRoute>
+                        <AdminDashboard />
+                      </AdminRoute>
+                    }
+                  />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
-  Wrench, Home, MapPin, Calendar, Clock, CheckCircle2,
-  AlertCircle, Shield, Phone, ArrowRight, User, Mail, FileText
+  Home, MapPin, CheckCircle2,
+  Shield, Phone, ArrowRight
 } from 'lucide-react';
 import { servicesApi } from '../utils/api';
 import toast from 'react-hot-toast';
@@ -33,12 +33,12 @@ export default function BookService() {
   const [bookingConfirmed, setBookingConfirmed] = useState(null);
 
   const deviceTypes = [
-    { id: 'laptop', name: 'Laptop', icon: '💻', baseCost: 299 },
-    { id: 'desktop', name: 'Desktop PC / All-in-One', icon: '🖥️', baseCost: 299 },
-    { id: 'printer', name: 'Printer / Scanner', icon: '🖨️', baseCost: 249 },
-    { id: 'cctv', name: 'CCTV / Security Camera', icon: '📷', baseCost: 399 },
-    { id: 'server', name: 'Server / Storage', icon: '🗄️', baseCost: 899 },
-    { id: 'networking', name: 'Network Router / Switch', icon: '🌐', baseCost: 349 },
+    { id: 'laptop', name: 'Laptop (New / Used)', icon: '💻', baseCost: 299 },
+    { id: 'desktop', name: 'Desktop PC / Custom Rig', icon: '🖥️', baseCost: 299 },
+    { id: 'imac', name: 'Apple iMac / Mac Mini', icon: '🍏', baseCost: 499 },
+    { id: 'printer', name: 'Printer / Cartridge', icon: '🖨️', baseCost: 249 },
+    { id: 'cctv', name: 'CCTV & Security System', icon: '📷', baseCost: 399 },
+    { id: 'networking', name: 'Network / Data Recovery', icon: '💾', baseCost: 499 },
   ];
 
   const issueCategories = [
@@ -242,11 +242,11 @@ export default function BookService() {
                     </div>
                     <div className="mode-content">
                       <div className="mode-title-row">
-                        <h4>Offline Store Drop-off</h4>
-                        <span className="mode-tag blue">Zero Travel Fee</span>
+                        <h4>Tatabad Store Drop-off</h4>
+                        <span className="mode-tag blue">Zero Visit Charge</span>
                       </div>
-                      <p>Bring your device directly to our service counter at Main Road showroom.</p>
-                      <span className="mode-price-note">Free counter diagnostic</span>
+                      <p>Bring your device to Techvick Computers at 46, 8th Street, Tatabad, Gandhipuram, Coimbatore.</p>
+                      <span className="mode-price-note">Free initial inspection & component check</span>
                     </div>
                   </label>
                 </div>
@@ -496,7 +496,7 @@ export default function BookService() {
                   </div>
                   <div className="gp-item">
                     <Shield size={16} />
-                    <span>90-Day TechMart Repair Warranty</span>
+                    <span>90-Day Techvick Repair Warranty</span>
                   </div>
                   <div className="gp-item">
                     <CheckCircle2 size={16} />
@@ -507,8 +507,8 @@ export default function BookService() {
                 <div className="store-hotline-box">
                   <Phone size={18} />
                   <div>
-                    <span className="hl-label">Direct Service Desk</span>
-                    <span className="hl-num">+91 98765 43210</span>
+                    <span className="hl-label">Tatabad Service Desk</span>
+                    <span className="hl-num">+91 94433 87654</span>
                   </div>
                 </div>
               </div>

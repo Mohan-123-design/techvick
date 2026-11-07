@@ -20,7 +20,7 @@ const api = axios.create({
 
 // Request interceptor - attach auth token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('techmart_token');
+  const token = localStorage.getItem('techvick_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -277,8 +277,8 @@ export const usersApi = {
     } catch {
       return {
         users: [
-          { id: 'u1', name: 'Store Administrator', email: 'admin@techmart.in', role: 'admin', phone: '+91 98765 00000' },
-          { id: 'u2', name: 'Rahul Sharma', email: 'customer@techmart.in', role: 'customer', phone: '+91 98765 43210' },
+          { id: 'u1', name: 'Techvick Store Manager', email: 'techvickcomputers@gmail.com', role: 'admin', phone: '+91 94433 87654' },
+          { id: 'u2', name: 'Coimbatore Customer', email: 'customer@techvick.in', role: 'customer', phone: '+91 98422 12345' },
           { id: 'u3', name: 'Priya Verma', email: 'priya.v@example.com', role: 'customer', phone: '+91 98401 22334' },
         ],
         total: 3,

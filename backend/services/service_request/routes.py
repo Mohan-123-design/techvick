@@ -51,7 +51,7 @@ class WarrantyRecordCreate(BaseModel):
     purchase_date: str
     expiry_date: str
     coverage: Optional[str] = "Standard Manufacturer & Store Warranty"
-    store_location: Optional[str] = "TechMart Main Branch"
+    store_location: Optional[str] = "Techvick Computers - Tatabad Main Store"
     invoice_number: Optional[str] = ""
 
 

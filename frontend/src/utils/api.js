@@ -128,7 +128,8 @@ export const productsApi = {
       const products = getLocalProducts();
       const newProduct = {
         ...productData,
-        _id: 'prod-local-' + Date.now(),
+        _id: 'tvc-prod-' + Date.now(),
+        id: 'tvc-prod-' + Date.now(),
         rating: 4.8,
         review_count: 1,
         created_at: new Date().toISOString(),
@@ -145,13 +146,17 @@ export const productsApi = {
       return await api.put(`/api/products/${productId}`, updateData);
     } catch {
       const products = getLocalProducts();
-      const index = products.findIndex((p) => (p._id || p.id) === productId);
+      const index = products.findIndex((p) => String(p._id || p.id) === String(productId));
       if (index !== -1) {
         products[index] = { ...products[index], ...updateData, updated_at: new Date().toISOString() };
         saveLocalProducts(products);
         return { product: products[index], message: 'Product updated successfully' };
       }
-      throw new Error('Product not found in store');
+      // If not in local list, prepend it
+      const fallbackItem = { _id: productId, id: productId, ...updateData, updated_at: new Date().toISOString() };
+      products.unshift(fallbackItem);
+      saveLocalProducts(products);
+      return { product: fallbackItem, message: 'Product updated successfully' };
     }
   },
 
@@ -161,7 +166,7 @@ export const productsApi = {
       return await api.delete(`/api/products/${productId}`);
     } catch {
       const products = getLocalProducts();
-      const filtered = products.filter((p) => (p._id || p.id) !== productId);
+      const filtered = products.filter((p) => String(p._id || p.id) !== String(productId));
       saveLocalProducts(filtered);
       return { message: 'Product deleted successfully' };
     }
@@ -260,7 +265,7 @@ export const usersApi = {
       });
     } catch {
       const inquiries = getLocalInquiries();
-      const item = inquiries.find((i) => i._id === inquiryId);
+      const item = inquiries.find((i) => String(i._id || i.id) === String(inquiryId));
       if (item) {
         item.status = status;
         if (responseNote) item.response_note = responseNote;
@@ -363,7 +368,7 @@ export const ordersApi = {
       });
     } catch {
       const orders = getLocalOrders();
-      const order = orders.find((o) => (o._id || o.order_number) === orderId);
+      const order = orders.find((o) => String(o._id || o.order_number) === String(orderId));
       if (order) {
         order.status = newStatus;
         if (adminNotes) order.admin_notes = adminNotes;
@@ -469,7 +474,7 @@ export const servicesApi = {
       });
     } catch {
       const requests = getLocalServiceRequests();
-      const item = requests.find((r) => r._id === requestId || r.ticket_number === requestId);
+      const item = requests.find((r) => String(r._id) === String(requestId) || String(r.ticket_number) === String(requestId));
       if (item) {
         item.status = newStatus;
         saveLocalServiceRequests(requests);
@@ -484,7 +489,7 @@ export const servicesApi = {
       return await api.patch(`/api/services/requests/${requestId}/assign`, assignmentData);
     } catch {
       const requests = getLocalServiceRequests();
-      const item = requests.find((r) => r._id === requestId || r.ticket_number === requestId);
+      const item = requests.find((r) => String(r._id) === String(requestId) || String(r.ticket_number) === String(requestId));
       if (item) {
         item.assigned_technician = assignmentData.technician_name;
         item.technician_phone = assignmentData.technician_phone;

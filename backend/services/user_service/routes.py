@@ -184,8 +184,9 @@ async def update_inquiry_status(
         set_data["response_note"] = response_note
 
     try:
+        query = {"_id": ObjectId(inquiry_id)} if ObjectId.is_valid(inquiry_id) else {"_id": inquiry_id}
         result = await collection.find_one_and_update(
-            {"_id": ObjectId(inquiry_id)},
+            query,
             {"$set": set_data},
             return_document=True,
         )

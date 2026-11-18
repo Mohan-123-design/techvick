@@ -192,7 +192,7 @@ export function getLocalProducts() {
     const saved = localStorage.getItem('techvick_products');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]._id && parsed[0]._id.startsWith('tvc-')) {
+      if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed;
       }
     }

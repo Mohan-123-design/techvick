@@ -97,7 +97,8 @@ async def get_product(product_id: str):
     """Get a single product by ID."""
     collection = Database.get_collection(COLLECTION)
     try:
-        product = await collection.find_one({"_id": ObjectId(product_id)})
+        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
+        product = await collection.find_one(query)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid product ID")
     if not product:
@@ -138,8 +139,9 @@ async def update_product(
     update_data["updated_at"] = utc_now()
 
     try:
+        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
         result = await collection.find_one_and_update(
-            {"_id": ObjectId(product_id)},
+            query,
             {"$set": update_data},
             return_document=True,
         )
@@ -159,9 +161,8 @@ async def delete_product(
     """Delete a product (admin only)."""
     collection = Database.get_collection(COLLECTION)
     try:
-        result = await collection.find_one_and_delete(
-            {"_id": ObjectId(product_id)},
-        )
+        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
+        result = await collection.find_one_and_delete(query)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid product ID")
     if not result:

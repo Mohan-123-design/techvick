@@ -64,17 +64,17 @@ export default function AdminDashboard() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [prodRes, ordRes, srvRes, inqRes] = await Promise.all([
+      const [prodRes, ordRes, srvRes, inqRes] = await Promise.allSettled([
         productsApi.getAll({ limit: 100 }),
         ordersApi.getAllAdmin(),
         servicesApi.getAllAdmin(),
         usersApi.getInquiriesAdmin(),
       ]);
 
-      setProducts(prodRes.products || []);
-      setOrders(ordRes.orders || []);
-      setServiceRequests(srvRes.service_requests || []);
-      setInquiries(inqRes.inquiries || []);
+      if (prodRes.status === 'fulfilled') setProducts(prodRes.value?.products || []);
+      if (ordRes.status === 'fulfilled') setOrders(ordRes.value?.orders || []);
+      if (srvRes.status === 'fulfilled') setServiceRequests(srvRes.value?.service_requests || []);
+      if (inqRes.status === 'fulfilled') setInquiries(inqRes.value?.inquiries || []);
     } catch (err) {
       console.error('Failed to load dashboard data', err);
     } finally {
@@ -168,13 +168,27 @@ export default function AdminDashboard() {
     try {
       if (editingProduct) {
         const pId = editingProduct._id || editingProduct.id;
-        await productsApi.update(pId, payload);
+        const res = await productsApi.update(pId, payload);
         toast.success(`Updated "${productForm.name}" successfully!`);
+        setProducts((prev) =>
+          prev.map((p) =>
+            String(p._id || p.id) === String(pId)
+              ? { ...p, ...payload, ...(res?.product || {}) }
+              : p
+          )
+        );
       } else {
-        await productsApi.create(payload);
+        const res = await productsApi.create(payload);
         toast.success(`Created "${productForm.name}" in catalog!`);
+        const createdProd = res?.product || {
+          ...payload,
+          _id: 'tvc-prod-' + Date.now(),
+          id: 'tvc-prod-' + Date.now(),
+        };
+        setProducts((prev) => [createdProd, ...prev]);
       }
       setProductModalOpen(false);
+      setEditingProduct(null);
       loadDashboardData();
     } catch (err) {
       toast.error(err.message || 'Error saving product');
@@ -187,6 +201,7 @@ export default function AdminDashboard() {
       try {
         await productsApi.delete(pId);
         toast.success(`Deleted "${product.name}"`);
+        setProducts((prev) => prev.filter((p) => String(p._id || p.id) !== String(pId)));
         loadDashboardData();
       } catch (err) {
         toast.error(err.message || 'Error deleting product');
@@ -201,6 +216,11 @@ export default function AdminDashboard() {
     try {
       await ordersApi.updateStatus(orderId, newStatus);
       toast.success(`Order ${orderId} marked as ${newStatus}`);
+      setOrders((prev) =>
+        prev.map((o) =>
+          String(o._id || o.order_number) === String(orderId) ? { ...o, status: newStatus } : o
+        )
+      );
       loadDashboardData();
     } catch (err) {
       toast.error(err.message || 'Failed to update order status');
@@ -214,6 +234,13 @@ export default function AdminDashboard() {
     try {
       await servicesApi.updateStatus(requestId, newStatus);
       toast.success(`Service ticket updated to ${newStatus}`);
+      setServiceRequests((prev) =>
+        prev.map((s) =>
+          String(s._id || s.ticket_number) === String(requestId)
+            ? { ...s, status: newStatus }
+            : s
+        )
+      );
       loadDashboardData();
     } catch (err) {
       toast.error(err.message || 'Failed to update service status');
@@ -239,6 +266,20 @@ export default function AdminDashboard() {
     try {
       await servicesApi.assignTechnician(reqId, assignForm);
       toast.success(`Assigned ${assignForm.technician_name} to ticket ${selectedService.ticket_number}`);
+      setServiceRequests((prev) =>
+        prev.map((s) =>
+          String(s._id || s.ticket_number) === String(reqId)
+            ? {
+                ...s,
+                assigned_technician: assignForm.technician_name,
+                technician_phone: assignForm.technician_phone,
+                estimated_cost: assignForm.estimated_cost,
+                preferred_time_slot: assignForm.scheduled_slot,
+                status: 'assigned',
+              }
+            : s
+        )
+      );
       setAssignModalOpen(false);
       loadDashboardData();
     } catch (err) {
@@ -253,6 +294,11 @@ export default function AdminDashboard() {
     try {
       await usersApi.updateInquiryStatus(inquiryId, newStatus);
       toast.success(`Inquiry marked as ${newStatus}`);
+      setInquiries((prev) =>
+        prev.map((i) =>
+          String(i._id || i.id) === String(inquiryId) ? { ...i, status: newStatus } : i
+        )
+      );
       loadDashboardData();
     } catch (err) {
       toast.error(err.message || 'Failed to update inquiry status');
@@ -844,7 +890,7 @@ export default function AdminDashboard() {
 
             <div className="inquiries-cards-grid">
               {filteredInquiries.map((inq) => {
-                const inqId = inq._id;
+                const inqId = inq._id || inq.id;
                 return (
                   <div key={inqId} className={`inquiry-admin-card ${inq.status}`}>
                     <div className="inq-top">

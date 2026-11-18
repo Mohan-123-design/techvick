@@ -101,6 +101,9 @@ class LocalFallbackCollection:
                     return False
                 if "$in" in v and val not in v["$in"]:
                     return False
+            elif k == "_id":
+                if str(doc.get("_id")) != str(v):
+                    return False
             elif doc.get(k) != v:
                 return False
         return True
@@ -179,6 +182,32 @@ class LocalFallbackCollection:
             deleted_count = init_len - len(docs)
 
         return Result()
+
+    async def find_one_and_update(self, query, update, return_document=True):
+        docs = self._read_all()
+        for i, d in enumerate(docs):
+            if self._matches(d, query):
+                set_vals = update.get("$set", {})
+                d.update(set_vals)
+                docs[i] = d
+                self._save_all(docs)
+                return d
+        return None
+
+    async def find_one_and_delete(self, query):
+        docs = self._read_all()
+        for i, d in enumerate(docs):
+            if self._matches(d, query):
+                removed = docs.pop(i)
+                self._save_all(docs)
+                return removed
+        return None
+
+    async def distinct(self, key, query=None):
+        docs = self._read_all()
+        filtered = [d for d in docs if self._matches(d, query or {})]
+        values = {d.get(key) for d in filtered if d.get(key) is not None}
+        return list(values)
 
     async def create_index(self, *args, **kwargs):
         pass

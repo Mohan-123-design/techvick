@@ -1,37 +1,32 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from enum import Enum
-
-
-class CategoryEnum(str, Enum):
-    LAPTOPS = "laptops"
-    DESKTOPS = "desktops"
-    SERVERS = "servers"
-    PRINTERS = "printers"
-    CCTV = "cctv"
-    ACCESSORIES = "accessories"
-    NETWORKING = "networking"
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, List, Union
 
 
 class ProductCreate(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     name: str = Field(..., min_length=2, max_length=200)
-    description: str = Field(..., min_length=10)
-    category: CategoryEnum
+    description: Optional[str] = Field(default="Genuine product available at Techvick Computers showroom.")
+    category: str = Field(default="laptops")
     brand: str = Field(..., min_length=1, max_length=100)
     price: float = Field(..., gt=0)
     original_price: Optional[float] = None
-    stock: int = Field(default=0, ge=0)
+    stock: int = Field(default=10, ge=0)
     images: List[str] = Field(default_factory=list)
     specifications: dict = Field(default_factory=dict)
-    warranty_months: int = Field(default=12, ge=0)
+    warranty_months: int = Field(default=24, ge=0)
     is_featured: bool = False
+    badge: Optional[str] = None
+    inStoreAvailability: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
 
 
 class ProductUpdate(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     name: Optional[str] = None
     description: Optional[str] = None
-    category: Optional[CategoryEnum] = None
+    category: Optional[str] = None
     brand: Optional[str] = None
     price: Optional[float] = None
     original_price: Optional[float] = None
@@ -40,6 +35,8 @@ class ProductUpdate(BaseModel):
     specifications: Optional[dict] = None
     warranty_months: Optional[int] = None
     is_featured: Optional[bool] = None
+    badge: Optional[str] = None
+    inStoreAvailability: Optional[str] = None
     tags: Optional[List[str]] = None
 
 

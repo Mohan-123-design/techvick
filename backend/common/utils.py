@@ -6,14 +6,17 @@ def serialize_doc(doc: dict) -> dict:
     """Convert MongoDB document to JSON-serializable format."""
     if doc is None:
         return None
-    doc["id"] = str(doc.pop("_id", ""))
-    # Convert datetime objects
-    for key, value in doc.items():
+    d = dict(doc)
+    doc_id = str(d.get("_id", d.get("id", "")))
+    d["id"] = doc_id
+    d["_id"] = doc_id
+    # Convert datetime objects and ObjectIds
+    for key, value in list(d.items()):
         if isinstance(value, datetime):
-            doc[key] = value.isoformat()
+            d[key] = value.isoformat()
         elif isinstance(value, ObjectId):
-            doc[key] = str(value)
-    return doc
+            d[key] = str(value)
+    return d
 
 
 def serialize_docs(docs: list) -> list:

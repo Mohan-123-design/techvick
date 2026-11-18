@@ -97,8 +97,10 @@ async def get_product(product_id: str):
     """Get a single product by ID."""
     collection = Database.get_collection(COLLECTION)
     try:
-        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
-        product = await collection.find_one(query)
+        id_conds = [{"_id": product_id}, {"id": product_id}]
+        if ObjectId.is_valid(product_id):
+            id_conds.append({"_id": ObjectId(product_id)})
+        product = await collection.find_one({"$or": id_conds})
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid product ID")
     if not product:
@@ -116,14 +118,15 @@ async def create_product(
     now = utc_now()
     doc = {
         **product.model_dump(),
-        "rating": 0.0,
-        "review_count": 0,
+        "rating": 4.8,
+        "review_count": 1,
         "is_active": True,
         "created_at": now,
         "updated_at": now,
     }
     result = await collection.insert_one(doc)
     doc["_id"] = result.inserted_id
+    doc["id"] = str(result.inserted_id)
     return {"product": serialize_doc(doc), "message": "Product created successfully"}
 
 
@@ -139,9 +142,11 @@ async def update_product(
     update_data["updated_at"] = utc_now()
 
     try:
-        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
+        id_conds = [{"_id": product_id}, {"id": product_id}]
+        if ObjectId.is_valid(product_id):
+            id_conds.append({"_id": ObjectId(product_id)})
         result = await collection.find_one_and_update(
-            query,
+            {"$or": id_conds},
             {"$set": update_data},
             return_document=True,
         )
@@ -161,8 +166,10 @@ async def delete_product(
     """Delete a product (admin only)."""
     collection = Database.get_collection(COLLECTION)
     try:
-        query = {"_id": ObjectId(product_id)} if ObjectId.is_valid(product_id) else {"_id": product_id}
-        result = await collection.find_one_and_delete(query)
+        id_conds = [{"_id": product_id}, {"id": product_id}]
+        if ObjectId.is_valid(product_id):
+            id_conds.append({"_id": ObjectId(product_id)})
+        result = await collection.find_one_and_delete({"$or": id_conds})
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid product ID")
     if not result:

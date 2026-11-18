@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { usersApi } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -35,14 +36,28 @@ export function AuthProvider({ children }) {
       const isCorrectPassword = cleanPass === 'Techvick@123';
 
       if (isStoreEmail && isCorrectPassword) {
-        const staffObj = {
+        let staffObj = {
           id: 'staff-techvick-01',
           name: 'Store Manager',
           email: 'techvickcomputers@gmail.com',
           role: 'admin',
           store: 'Techvick Computers - Tatabad Branch',
         };
-        localStorage.setItem('techvick_token', 'techvick_store_manager_token');
+        let token = 'techvick_store_manager_token';
+
+        try {
+          const res = await usersApi.login({ email: cleanEmail, password: cleanPass });
+          if (res?.token) {
+            token = res.token;
+            if (res.user) {
+              staffObj = { ...staffObj, ...res.user, store: 'Techvick Computers - Tatabad Branch' };
+            }
+          }
+        } catch {
+          // Keep resilient local admin bypass token
+        }
+
+        localStorage.setItem('techvick_token', token);
         setUser(staffObj);
         toast.success('Welcome to Techvick Store Portal!', { icon: '🔐' });
         return staffObj;

@@ -147,21 +147,21 @@ export default function AdminDashboard() {
     }
 
     const payload = {
-      name: productForm.name,
-      category: productForm.category,
-      brand: productForm.brand,
+      name: productForm.name.trim(),
+      category: productForm.category || 'laptops',
+      brand: productForm.brand.trim(),
       price: Number(productForm.price),
       original_price: productForm.original_price ? Number(productForm.original_price) : undefined,
-      stock: Number(productForm.stock),
-      warranty_months: Number(productForm.warranty_months),
-      badge: productForm.badge || undefined,
-      description: productForm.description,
-      inStoreAvailability: productForm.inStoreAvailability,
+      stock: Number(productForm.stock) || 10,
+      warranty_months: Number(productForm.warranty_months) || 24,
+      badge: productForm.badge?.trim() || undefined,
+      description: productForm.description?.trim() || `Genuine ${productForm.brand} ${productForm.name} available at Techvick Computers Tatabad showroom.`,
+      inStoreAvailability: productForm.inStoreAvailability?.trim() || 'Available at Main Store',
       specifications: {
-        ...(productForm.specProcessor ? { Processor: productForm.specProcessor } : {}),
-        ...(productForm.specRAM ? { RAM: productForm.specRAM } : {}),
-        ...(productForm.specStorage ? { Storage: productForm.specStorage } : {}),
-        ...(productForm.specDisplay ? { Display: productForm.specDisplay } : {}),
+        ...(productForm.specProcessor ? { Processor: productForm.specProcessor.trim() } : {}),
+        ...(productForm.specRAM ? { RAM: productForm.specRAM.trim() } : {}),
+        ...(productForm.specStorage ? { Storage: productForm.specStorage.trim() } : {}),
+        ...(productForm.specDisplay ? { Display: productForm.specDisplay.trim() } : {}),
       },
     };
 

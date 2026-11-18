@@ -120,19 +120,15 @@ async def health():
 # Seed sample data
 # ------------------------------------------------------------------
 async def seed_sample_data():
-    """Insert demo products if the database is empty."""
+    """Insert demo products and admin user if the database is empty."""
     try:
-        if not getattr(Database, "is_connected", False) or Database.get_db() is None:
-            print("ℹ️ Skipping seed: Database not connected. Check MongoDB Atlas Network Access.")
-            return
-
         collection = Database.get_collection("products")
         count = await collection.count_documents({})
         if count > 0:
             print(f"📦 Database already has {count} products, skipping seed.")
             return
     except Exception as e:
-        print(f"⚠️ MongoDB check failed during seed: {e}")
+        print(f"⚠️ Check failed during seed: {e}")
         return
 
     from common.utils import utc_now
@@ -588,6 +584,27 @@ async def seed_sample_data():
             },
         ])
         print("📨 Seeded sample contact inquiries")
+
+    # Seed Admin User if not present
+    users_coll = Database.get_collection("users")
+    admin_user = await users_coll.find_one({"email": "techvickcomputers@gmail.com"})
+    if not admin_user:
+        from common.auth import hash_password
+        admin_doc = {
+            "name": "Techvick Store Manager",
+            "email": "techvickcomputers@gmail.com",
+            "password": hash_password("Techvick@123"),
+            "role": "admin",
+            "phone": "+91 94433 87654",
+            "address": "46, 8th Street, Tatabad",
+            "city": "Coimbatore",
+            "pincode": "641012",
+            "is_active": True,
+            "created_at": now,
+            "updated_at": now,
+        }
+        await users_coll.insert_one(admin_doc)
+        print("👤 Seeded official Techvick Store Manager admin account")
 
 
 

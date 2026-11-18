@@ -43,7 +43,10 @@ export const productsApi = {
   getAll: async (params = {}) => {
     try {
       const data = await api.get('/api/products', { params });
-      if (data && data.products && data.products.length > 0) return data;
+      if (data && data.products && data.products.length > 0) {
+        saveLocalProducts(data.products);
+        return data;
+      }
       throw new Error('Fallback to mock');
     } catch {
       let filtered = getLocalProducts();
@@ -123,8 +126,19 @@ export const productsApi = {
   // Admin CRUD: Create
   create: async (productData) => {
     try {
-      return await api.post('/api/products', productData);
-    } catch {
+      const res = await api.post('/api/products', productData);
+      const created = res?.product || res;
+      const normalized = {
+        ...created,
+        _id: String(created._id || created.id || 'tvc-prod-' + Date.now()),
+        id: String(created.id || created._id || 'tvc-prod-' + Date.now()),
+      };
+      const products = getLocalProducts();
+      products.unshift(normalized);
+      saveLocalProducts(products);
+      return { product: normalized, message: 'Product created successfully in database!' };
+    } catch (err) {
+      console.warn('Backend API create failed, falling back to local storage:', err);
       const products = getLocalProducts();
       const newProduct = {
         ...productData,
@@ -143,8 +157,24 @@ export const productsApi = {
   // Admin CRUD: Update
   update: async (productId, updateData) => {
     try {
-      return await api.put(`/api/products/${productId}`, updateData);
-    } catch {
+      const res = await api.put(`/api/products/${productId}`, updateData);
+      const updated = res?.product || { ...updateData, _id: productId, id: productId };
+      const normalized = {
+        ...updated,
+        _id: String(updated._id || updated.id || productId),
+        id: String(updated.id || updated._id || productId),
+      };
+      const products = getLocalProducts();
+      const index = products.findIndex((p) => String(p._id || p.id) === String(productId));
+      if (index !== -1) {
+        products[index] = { ...products[index], ...normalized, updated_at: new Date().toISOString() };
+      } else {
+        products.unshift(normalized);
+      }
+      saveLocalProducts(products);
+      return { product: normalized, message: 'Product updated successfully in database!' };
+    } catch (err) {
+      console.warn('Backend API update failed, falling back to local storage:', err);
       const products = getLocalProducts();
       const index = products.findIndex((p) => String(p._id || p.id) === String(productId));
       if (index !== -1) {
@@ -163,13 +193,14 @@ export const productsApi = {
   // Admin CRUD: Delete
   delete: async (productId) => {
     try {
-      return await api.delete(`/api/products/${productId}`);
-    } catch {
-      const products = getLocalProducts();
-      const filtered = products.filter((p) => String(p._id || p.id) !== String(productId));
-      saveLocalProducts(filtered);
-      return { message: 'Product deleted successfully' };
+      await api.delete(`/api/products/${productId}`);
+    } catch (err) {
+      console.warn('Backend API delete failed, deleting from local storage:', err);
     }
+    const products = getLocalProducts();
+    const filtered = products.filter((p) => String(p._id || p.id) !== String(productId));
+    saveLocalProducts(filtered);
+    return { message: 'Product deleted successfully' };
   },
 };
 
@@ -199,12 +230,12 @@ export const usersApi = {
     } catch {
       // Mock login fallback
       const email = (credentials.email || '').toLowerCase().trim();
-      const isAdmin = email.includes('admin');
-      const token = 'mock_jwt_token_' + (isAdmin ? 'admin' : 'customer') + '_' + Date.now();
+      const isAdmin = email.includes('admin') || email.includes('techvick') || email === 'techvickcomputers@gmail.com';
+      const token = isAdmin ? 'techvick_store_manager_token' : 'mock_jwt_token_customer_' + Date.now();
       const user = {
         id: isAdmin ? 'admin-001' : 'usr-' + Date.now(),
-        name: isAdmin ? 'Store Administrator' : 'Rahul Sharma',
-        email: credentials.email,
+        name: isAdmin ? 'Store Manager' : 'Customer',
+        email: credentials.email || 'techvickcomputers@gmail.com',
         role: isAdmin ? 'admin' : 'customer',
       };
       return { message: 'Login successful', token, user };

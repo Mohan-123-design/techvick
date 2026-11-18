@@ -526,10 +526,20 @@ export default function AdminDashboard() {
               Dedicated Store Staff Portal: Service Bookings, Customer Inquiries & Quotes, Order Fulfillment, and Real Market Inventory.
             </p>
           </div>
-          <button className="btn btn-secondary btn-sm refresh-btn" onClick={loadDashboardData} disabled={loading}>
-            <RefreshCw size={15} className={loading ? 'spin' : ''} />
-            <span>Sync Data</span>
-          </button>
+          <div className="admin-header-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              className={`btn btn-sm ${activeTab === 'appearance' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setActiveTab('appearance')}
+              title="Customize theme, accent color, font & density"
+            >
+              <Palette size={15} />
+              <span>UI & Branding</span>
+            </button>
+            <button className="btn btn-secondary btn-sm refresh-btn" onClick={loadDashboardData} disabled={loading}>
+              <RefreshCw size={15} className={loading ? 'spin' : ''} />
+              <span>Sync Data</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -656,6 +666,22 @@ export default function AdminDashboard() {
                 <h3>⚡ Store Management Shortcuts</h3>
                 <p className="admin-box-sub">Direct access to frequent administrative tasks</p>
                 <div className="quick-actions-grid">
+                  <button className="quick-act-btn" onClick={() => { setActiveTab('services_catalog'); handleOpenServiceModal(); }}>
+                    <Wrench size={18} />
+                    <div>
+                      <strong>Add Service Offering</strong>
+                      <span>Create chip-level, LAN or CCTV service</span>
+                    </div>
+                  </button>
+
+                  <button className="quick-act-btn" onClick={() => setActiveTab('appearance')}>
+                    <Palette size={18} />
+                    <div>
+                      <strong>Customize UI & Branding</strong>
+                      <span>Theme colors, typography & layout density</span>
+                    </div>
+                  </button>
+
                   <button className="quick-act-btn" onClick={() => { setActiveTab('products'); handleOpenProductModal(); }}>
                     <Plus size={18} />
                     <div>
@@ -1341,7 +1367,13 @@ export default function AdminDashboard() {
                   Live real-time customizer inspired by modern dark-slate SaaS design tokens (Axora). Changes apply instantly across the storefront, cards, badges, and admin dashboard.
                 </p>
               </div>
-              <button className="btn btn-secondary btn-sm" onClick={resetAppearance}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  resetAppearance();
+                  toast.success('Reset appearance settings to default Techvick styling!', { id: 'reset-toast' });
+                }}
+              >
                 <RefreshCw size={14} /> Reset Defaults
               </button>
             </div>
@@ -1357,7 +1389,12 @@ export default function AdminDashboard() {
                 <div className="theme-toggle-row">
                   <button
                     className={`theme-mode-btn ${isDark ? 'active' : ''}`}
-                    onClick={() => theme !== 'dark' && toggleTheme()}
+                    onClick={() => {
+                      if (theme !== 'dark') {
+                        toggleTheme();
+                        toast.success('Switched to Dark Slate-Navy Mode!', { id: 'mode-toast' });
+                      }
+                    }}
                   >
                     <span className="mode-indicator dark"></span>
                     <div>
@@ -1367,7 +1404,12 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     className={`theme-mode-btn ${!isDark ? 'active' : ''}`}
-                    onClick={() => theme !== 'light' && toggleTheme()}
+                    onClick={() => {
+                      if (theme !== 'light') {
+                        toggleTheme();
+                        toast.success('Switched to Clean Light Mode!', { id: 'mode-toast' });
+                      }
+                    }}
                   >
                     <span className="mode-indicator light"></span>
                     <div>
@@ -1392,7 +1434,10 @@ export default function AdminDashboard() {
                       <button
                         key={key}
                         className={`color-preset-card ${isSelected ? 'selected' : ''}`}
-                        onClick={() => setAccent(key)}
+                        onClick={() => {
+                          setAccent(key);
+                          toast.success(`Accent color switched to ${preset.name}!`, { id: 'theme-toast' });
+                        }}
                       >
                         <div className="preset-swatch" style={{ background: preset.primary }}>
                           {isSelected && <Check size={16} className="preset-check" />}
@@ -1428,7 +1473,10 @@ export default function AdminDashboard() {
                         key={f.id}
                         className={`font-preset-card ${isSelected ? 'selected' : ''}`}
                         style={{ fontFamily: f.id }}
-                        onClick={() => setFontFamily(f.id)}
+                        onClick={() => {
+                          setFontFamily(f.id);
+                          toast.success(`Font family switched to ${f.label}!`, { id: 'font-toast' });
+                        }}
                       >
                         <div className="font-header">
                           <strong style={{ fontFamily: f.id }}>{f.label}</strong>
@@ -1451,14 +1499,20 @@ export default function AdminDashboard() {
                 <div className="density-toggle-group">
                   <button
                     className={`density-btn ${density === 'comfortable' ? 'active' : ''}`}
-                    onClick={() => setDensity('comfortable')}
+                    onClick={() => {
+                      setDensity('comfortable');
+                      toast.success('Layout density set to Comfortable (Standard)!', { id: 'density-toast' });
+                    }}
                   >
                     <strong>Comfortable</strong>
                     <span>Standard spacious padding • Recommended for storefront</span>
                   </button>
                   <button
                     className={`density-btn ${density === 'compact' ? 'active' : ''}`}
-                    onClick={() => setDensity('compact')}
+                    onClick={() => {
+                      setDensity('compact');
+                      toast.success('Layout density set to Compact (Condensed Data)!', { id: 'density-toast' });
+                    }}
                   >
                     <strong>Compact</strong>
                     <span>Condensed data view • Recommended for high-volume store counter</span>

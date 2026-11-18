@@ -234,6 +234,173 @@ export function saveLocalServiceRequests(requests) {
   } catch {}
 }
 
+export const DEFAULT_SERVICES_CATALOG = [
+  {
+    _id: 'srv-cat-01',
+    id: 'srv-cat-01',
+    title: 'New & Used Laptops, Desktops, iMac Service',
+    category: 'hardware',
+    badge: 'Chip-Level Specialist',
+    description: 'Certified motherboard chip-level repair, display replacement, hinge re-fabrication, battery replacement, and hardware diagnostics for Dell, HP, Lenovo, Apple, and Asus.',
+    turnaround: 'Same Day / 24 Hours',
+    repair_warranty: 'Up to 1-Year Guarantee',
+    price: '',
+    icon_name: 'Laptop',
+    is_active: true,
+    sort_order: 1,
+    features: [
+      'Free preliminary counter inspection at Tatabad store',
+      'Certified BGA motherboard & chip-level micro-soldering',
+      'Original OEM displays, batteries, keyboard & hinge parts',
+      'Complete internal dust cleanout & high-grade thermal repaste',
+      'Pre-loaded genuine operating system and verified drivers'
+    ]
+  },
+  {
+    _id: 'srv-cat-02',
+    id: 'srv-cat-02',
+    title: 'Office LAN & Structured Networking Setup',
+    category: 'networking',
+    badge: 'Network Certified',
+    description: 'Comprehensive enterprise & office networking: Cat6 structured cabling, patch panels, gigabit managed switches, server rack installation, and Wi-Fi 6 mesh setups.',
+    turnaround: 'Same Day Site Dispatch',
+    repair_warranty: 'Written Network Warranty',
+    price: '',
+    icon_name: 'Network',
+    is_active: true,
+    sort_order: 2,
+    features: [
+      'Cat6 / Cat6a structured cabling layout with crimping & testing',
+      'Managed/Unmanaged Gigabit Ethernet switch configuration',
+      'Multi-floor Wi-Fi 6 / Mesh seamless roaming coverage',
+      'Firewall security, VLAN segmentation & router setup',
+      'On-site network diagnostic testing and packet loss resolution'
+    ]
+  },
+  {
+    _id: 'srv-cat-03',
+    id: 'srv-cat-03',
+    title: 'CCTV Surveillance & Multi-Function Printers',
+    category: 'cctv_printers',
+    badge: 'Sales & Support',
+    description: 'Installation and servicing for Epson EcoTank, HP LaserJet, and Canon printers. Full HD & IP CCTV surveillance setup with mobile remote live monitoring.',
+    turnaround: '2 - 4 Hours',
+    repair_warranty: 'Store Written Guarantee',
+    price: '',
+    icon_name: 'Printer',
+    is_active: true,
+    sort_order: 3,
+    features: [
+      'Micro-toner and ink refilling for Epson, HP & Canon',
+      'Paper jam, gear set & pickup roller replacement',
+      'CP PLUS & Hikvision 4/8/16-channel DVR & NVR setups',
+      'Secure mobile phone live streaming & playback configuration',
+      'Monitor backlight and SMPS power circuit diagnostics'
+    ]
+  },
+  {
+    _id: 'srv-cat-04',
+    id: 'srv-cat-04',
+    title: 'Express Hardware & High-Speed Upgrades',
+    category: 'upgrades',
+    badge: 'Express 45-Mins',
+    description: 'Supercharge slow PCs and laptops. Crucial / Samsung PCIe NVMe SSD installations, DDR4/DDR5 RAM memory expansion, and 100% data cloning without data loss.',
+    turnaround: '30 - 45 Minutes',
+    repair_warranty: 'Up to 5 Years Component Warranty',
+    price: '',
+    icon_name: 'Zap',
+    is_active: true,
+    sort_order: 4,
+    features: [
+      'Ultra-fast PCIe Gen3/Gen4 NVMe SSD fitting & partition setup',
+      'Bit-by-bit identical hard drive to SSD migration (zero data loss)',
+      'DDR4 / DDR5 RAM dual-channel memory expansion up to 64GB',
+      'Thermal Grizzly thermal paste re-application for low temps',
+      'Instant 5x to 10x boot speed & multitasking enhancement'
+    ]
+  },
+  {
+    _id: 'srv-cat-05',
+    id: 'srv-cat-05',
+    title: 'Clean-Room Data Recovery & Extraction',
+    category: 'data_recovery',
+    badge: '100% Confidential',
+    description: 'Advanced data extraction from clicking hard disks, corrupted SSDs, dead USB flash drives, memory cards, and accidentally formatted storage drives.',
+    turnaround: '24 - 48 Hours',
+    repair_warranty: 'No Recovery, No Fee Guarantee',
+    price: '',
+    icon_name: 'Database',
+    is_active: true,
+    sort_order: 5,
+    features: [
+      'Sector-by-sector damaged mechanical disk surface extraction',
+      'Accidental format, partition loss & deleted file recovery',
+      'Firmware failure recovery for NVMe & SATA solid-state drives',
+      'Tally, GST accounts, database & family media file prioritization',
+      'Strict client data privacy with NDA protection'
+    ]
+  },
+  {
+    _id: 'srv-cat-06',
+    id: 'srv-cat-06',
+    title: 'Custom Gaming & Workstation PC Builds',
+    category: 'pc_builds',
+    badge: 'Tailor-Made Rig',
+    description: 'Custom assembled computer rigs for high-FPS competitive esports gaming, 4K/8K video editing, 3D AutoCAD rendering, and machine learning AI workstations.',
+    turnaround: '1 - 2 Business Days',
+    repair_warranty: '3-Year Hardware Component Warranty',
+    price: '',
+    icon_name: 'Cpu',
+    is_active: true,
+    sort_order: 6,
+    features: [
+      'NVIDIA RTX 40-Series & AMD Radeon high-performance graphics',
+      'Latest Intel Core & AMD Ryzen multi-core processors',
+      'AIO liquid cooling & high-airflow tempered glass cases',
+      'Surgical cable management with custom aesthetic lighting',
+      '24-Hour continuous thermal burn-in stress benchmark'
+    ]
+  },
+  {
+    _id: 'srv-cat-07',
+    id: 'srv-cat-07',
+    title: 'Doorstep Site Visits & Annual Maintenance (AMC)',
+    category: 'site_visit',
+    badge: 'Across Coimbatore',
+    description: 'On-site hardware engineer visits to your home, office, clinic, or school anywhere in Coimbatore, plus corporate IT AMC contracts for uninterrupted operations.',
+    turnaround: 'Prompt Slot Dispatch',
+    repair_warranty: '90 Days Service Warranty',
+    price: '',
+    icon_name: 'Home',
+    is_active: true,
+    sort_order: 7,
+    features: [
+      'Background-checked hardware engineer arrives with mobile tool kit',
+      'On-site diagnosis for desktop computers, printers, and LAN cables',
+      'Preventive periodic IT maintenance & antivirus updates',
+      'Priority emergency dispatch for commercial office AMC clients',
+      'Transparent service report and itemized billing'
+    ]
+  }
+];
+
+export function getLocalServicesCatalog() {
+  try {
+    const saved = localStorage.getItem('techvick_services_catalog');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return [...DEFAULT_SERVICES_CATALOG];
+}
+
+export function saveLocalServicesCatalog(catalog) {
+  try {
+    localStorage.setItem('techvick_services_catalog', JSON.stringify(catalog));
+  } catch {}
+}
+
 export function getLocalInquiries() {
   try {
     const saved = localStorage.getItem('techvick_inquiries');

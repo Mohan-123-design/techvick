@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, EmailStr
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from typing import Optional, List
 from enum import Enum
 
 
@@ -73,3 +73,35 @@ class WarrantyCheckRequest(BaseModel):
     product_serial: str = Field(..., min_length=4)
     purchase_date: Optional[str] = None
     customer_email: Optional[EmailStr] = None
+
+
+class ServiceCatalogCreate(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    title: str = Field(..., min_length=2, max_length=200)
+    category: str = Field(default="hardware")  # hardware, networking, cctv_printers, upgrades, pc_builds, data_recovery, site_visit
+    badge: Optional[str] = "Service & Support"
+    description: str = Field(..., min_length=5)
+    turnaround: Optional[str] = "Same Day / 24 Hours"
+    repair_warranty: Optional[str] = "Written Store Guarantee"
+    features: List[str] = Field(default_factory=list)
+    price: Optional[str] = ""  # Amount blank / optional as requested
+    icon_name: Optional[str] = "Wrench"
+    is_active: bool = True
+    sort_order: int = 0
+
+
+class ServiceCatalogUpdate(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    title: Optional[str] = None
+    category: Optional[str] = None
+    badge: Optional[str] = None
+    description: Optional[str] = None
+    turnaround: Optional[str] = None
+    repair_warranty: Optional[str] = None
+    features: Optional[List[str]] = None
+    price: Optional[str] = None
+    icon_name: Optional[str] = None
+    is_active: Optional[bool] = None
+    sort_order: Optional[int] = None

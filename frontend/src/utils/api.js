@@ -10,6 +10,8 @@ import {
   saveLocalServiceRequests,
   getLocalInquiries,
   saveLocalInquiries,
+  getLocalServicesCatalog,
+  saveLocalServicesCatalog,
 } from '../constants/mockData';
 
 const api = axios.create({
@@ -418,6 +420,100 @@ export const ordersApi = {
 // ==========================================
 export const servicesApi = {
   getTypes: () => api.get('/api/services/types'),
+
+  // Services Catalog Offerings (Full Admin CRUD - 200% Focus)
+  getCatalog: async (params = {}) => {
+    try {
+      const data = await api.get('/api/services/catalog', { params });
+      if (data && data.services && data.services.length > 0) {
+        saveLocalServicesCatalog(data.services);
+        return data;
+      }
+      throw new Error('Fallback to local catalog');
+    } catch {
+      let catalog = getLocalServicesCatalog();
+      if (params.category && params.category !== 'all') {
+        catalog = catalog.filter((s) => s.category?.toLowerCase() === params.category.toLowerCase());
+      }
+      if (!params.include_inactive) {
+        catalog = catalog.filter((s) => s.is_active !== false);
+      }
+      return { services: catalog, total: catalog.length };
+    }
+  },
+
+  createCatalogItem: async (serviceData) => {
+    try {
+      const res = await api.post('/api/services/catalog', serviceData);
+      const created = res?.service || res;
+      const normalized = {
+        ...created,
+        _id: String(created._id || created.id || 'srv-cat-' + Date.now()),
+        id: String(created.id || created._id || 'srv-cat-' + Date.now()),
+      };
+      const catalog = getLocalServicesCatalog();
+      catalog.push(normalized);
+      saveLocalServicesCatalog(catalog);
+      return { service: normalized, message: 'Service added to catalog successfully!' };
+    } catch (err) {
+      console.warn('Backend API create service failed, falling back to local storage:', err);
+      const catalog = getLocalServicesCatalog();
+      const newService = {
+        ...serviceData,
+        _id: 'srv-cat-' + Date.now(),
+        id: 'srv-cat-' + Date.now(),
+        is_active: serviceData.is_active !== undefined ? serviceData.is_active : true,
+        sort_order: catalog.length + 1,
+        created_at: new Date().toISOString(),
+      };
+      catalog.push(newService);
+      saveLocalServicesCatalog(catalog);
+      return { service: newService, message: 'Service added to catalog successfully!' };
+    }
+  },
+
+  updateCatalogItem: async (serviceId, updateData) => {
+    try {
+      const res = await api.put(`/api/services/catalog/${serviceId}`, updateData);
+      const updated = res?.service || { ...updateData, _id: serviceId, id: serviceId };
+      const normalized = {
+        ...updated,
+        _id: String(updated._id || updated.id || serviceId),
+        id: String(updated.id || updated._id || serviceId),
+      };
+      const catalog = getLocalServicesCatalog();
+      const idx = catalog.findIndex((s) => String(s._id || s.id) === String(serviceId));
+      if (idx !== -1) {
+        catalog[idx] = { ...catalog[idx], ...normalized, updated_at: new Date().toISOString() };
+      } else {
+        catalog.push(normalized);
+      }
+      saveLocalServicesCatalog(catalog);
+      return { service: normalized, message: 'Service updated successfully!' };
+    } catch (err) {
+      console.warn('Backend API update service failed, falling back to local storage:', err);
+      const catalog = getLocalServicesCatalog();
+      const idx = catalog.findIndex((s) => String(s._id || s.id) === String(serviceId));
+      if (idx !== -1) {
+        catalog[idx] = { ...catalog[idx], ...updateData, updated_at: new Date().toISOString() };
+        saveLocalServicesCatalog(catalog);
+        return { service: catalog[idx], message: 'Service updated successfully!' };
+      }
+      return { service: updateData, message: 'Service updated successfully!' };
+    }
+  },
+
+  deleteCatalogItem: async (serviceId) => {
+    try {
+      await api.delete(`/api/services/catalog/${serviceId}`);
+    } catch (err) {
+      console.warn('Backend API delete service failed, deleting locally:', err);
+    }
+    const catalog = getLocalServicesCatalog();
+    const filtered = catalog.filter((s) => String(s._id || s.id) !== String(serviceId));
+    saveLocalServicesCatalog(filtered);
+    return { message: 'Service offering removed from catalog' };
+  },
 
   createRequest: async (data) => {
     try {

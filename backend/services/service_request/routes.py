@@ -11,11 +11,12 @@ from pydantic import BaseModel
 from common.database import Database
 from common.auth import require_admin
 from common.utils import serialize_doc, serialize_docs, utc_now, build_pagination, SERVICE_TYPES
-from .schemas import ServiceRequestCreate, WarrantyCheckRequest
+from .schemas import ServiceRequestCreate, WarrantyCheckRequest, ServiceCatalogCreate, ServiceCatalogUpdate
 
 router = APIRouter(prefix="/api/services", tags=["Service Requests"])
 
 COLLECTION = "service_requests"
+CATALOG_COLLECTION = "services_catalog"
 
 
 def generate_ticket_number():
@@ -59,6 +60,96 @@ class WarrantyRecordCreate(BaseModel):
 async def get_service_types():
     """Get all available service types."""
     return {"service_types": SERVICE_TYPES}
+
+
+# ========================================================
+# SERVICES CATALOG (FULL CRUD BY ADMIN - 200% FOCUS)
+# ========================================================
+@router.get("/catalog")
+async def get_services_catalog(
+    category: Optional[str] = None,
+    include_inactive: bool = False,
+):
+    """Get all service catalog offerings."""
+    collection = Database.get_collection(CATALOG_COLLECTION)
+    query = {}
+    if not include_inactive:
+        query["is_active"] = True
+    if category and category != "all":
+        query["category"] = category
+
+    cursor = collection.find(query).sort("sort_order", 1)
+    services = await cursor.to_list(length=100)
+    return {"services": serialize_docs(services), "total": len(services)}
+
+
+@router.post("/catalog", status_code=status.HTTP_201_CREATED)
+async def create_service_catalog_item(
+    item: ServiceCatalogCreate,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Add a new service offering to the catalog."""
+    collection = Database.get_collection(CATALOG_COLLECTION)
+    now = utc_now()
+    doc = {
+        **item.model_dump(),
+        "created_at": now,
+        "updated_at": now,
+    }
+    result = await collection.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    doc["id"] = str(result.inserted_id)
+    return {"service": serialize_doc(doc), "message": f'Service "{item.title}" added to catalog!'}
+
+
+@router.put("/catalog/{service_id}")
+async def update_service_catalog_item(
+    service_id: str,
+    item: ServiceCatalogUpdate,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Update an existing service offering."""
+    collection = Database.get_collection(CATALOG_COLLECTION)
+    update_data = {k: v for k, v in item.model_dump().items() if v is not None}
+    update_data["updated_at"] = utc_now()
+
+    try:
+        id_conds = [{"_id": service_id}, {"id": service_id}]
+        if ObjectId.is_valid(service_id):
+            id_conds.append({"_id": ObjectId(service_id)})
+        result = await collection.find_one_and_update(
+            {"$or": id_conds},
+            {"$set": update_data},
+            return_document=True,
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid service ID")
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Service offering not found")
+
+    return {"service": serialize_doc(result), "message": f'Service updated successfully!'}
+
+
+@router.delete("/catalog/{service_id}")
+async def delete_service_catalog_item(
+    service_id: str,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Delete a service offering from catalog."""
+    collection = Database.get_collection(CATALOG_COLLECTION)
+    try:
+        id_conds = [{"_id": service_id}, {"id": service_id}]
+        if ObjectId.is_valid(service_id):
+            id_conds.append({"_id": ObjectId(service_id)})
+        result = await collection.find_one_and_delete({"$or": id_conds})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid service ID")
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Service offering not found")
+
+    return {"message": "Service offering removed successfully"}
 
 
 @router.post("/request", status_code=status.HTTP_201_CREATED)

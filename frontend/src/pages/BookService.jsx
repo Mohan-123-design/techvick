@@ -52,20 +52,9 @@ export default function BookService() {
     { id: 'data_recovery', name: 'Data Recovery from Damaged Disk' },
   ];
 
-  // Dynamic cost calculation
+  // Dynamic cost calculation - Blank / Free Assessment per service strategy
   const calculateEstimate = () => {
-    const selectedDev = deviceTypes.find((d) => d.id === formData.deviceType) || deviceTypes[0];
-    let total = selectedDev.baseCost;
-
-    if (formData.serviceMode === 'site_visit') {
-      total += 199; // Doorstep technician travel & diagnostic fee
-    }
-
-    if (formData.urgency === 'urgent') {
-      total += 250; // Priority express 2-hour dispatch
-    }
-
-    return total;
+    return 0;
   };
 
   const handleChange = (e) => {
@@ -98,7 +87,7 @@ export default function BookService() {
       const result = await servicesApi.createRequest(payload);
       setBookingConfirmed({
         ticketNumber: result.ticket_number || 'SRV-' + Math.floor(100000 + Math.random() * 900000),
-        estimatedCost: estimated,
+        estimatedCost: 'Free Assessment (Quote on Diagnosis)',
         ...formData,
       });
       toast.success('Service Request Booked Successfully!');
@@ -166,7 +155,7 @@ export default function BookService() {
               </div>
               <div className="confirm-detail">
                 <span className="cd-label">Estimated Diagnostic Cost:</span>
-                <span className="cd-val highlight">₹{bookingConfirmed.estimatedCost}</span>
+                <span className="cd-val highlight">{bookingConfirmed.estimatedCost}</span>
               </div>
               <div className="confirm-detail">
                 <span className="cd-label">Contact:</span>
@@ -455,37 +444,30 @@ export default function BookService() {
             {/* Live Cost Estimate & Transparency Summary */}
             <aside className="estimate-sidebar">
               <div className="estimate-card">
-                <h3>Live Estimate Summary</h3>
-                <p className="estimate-sub">Transparent pricing with zero hidden costs</p>
+                <h3>Assessment & Warranty</h3>
+                <p className="estimate-sub">Zero advance fees • Free counter diagnosis</p>
 
                 <div className="estimate-breakdown">
                   <div className="est-line">
-                    <span>Base Diagnostic & Labor:</span>
-                    <span>₹{deviceTypes.find((d) => d.id === formData.deviceType)?.baseCost || 299}</span>
+                    <span>Counter / Initial Inspection:</span>
+                    <span className="green">FREE (₹0)</span>
                   </div>
 
                   {formData.serviceMode === 'site_visit' ? (
                     <div className="est-line">
-                      <span>Doorstep Travel & Toolkit:</span>
-                      <span className="green">+ ₹199</span>
+                      <span>Doorstep Site Visit:</span>
+                      <span className="green">Free Counter Assessment</span>
                     </div>
                   ) : (
                     <div className="est-line">
                       <span>Store Drop-off:</span>
-                      <span className="green">FREE</span>
-                    </div>
-                  )}
-
-                  {formData.urgency === 'urgent' && (
-                    <div className="est-line">
-                      <span>2-Hour Priority Dispatch:</span>
-                      <span className="accent">+ ₹250</span>
+                      <span className="green">FREE (₹0)</span>
                     </div>
                   )}
 
                   <div className="est-total-line">
-                    <span>Estimated Total:</span>
-                    <span className="total-amount">₹{calculateEstimate()}</span>
+                    <span>Initial Amount:</span>
+                    <span className="total-amount" style={{ fontSize: '1.05rem', color: '#10b981' }}>₹0 (No Advance)</span>
                   </div>
                 </div>
 
@@ -500,7 +482,7 @@ export default function BookService() {
                   </div>
                   <div className="gp-item">
                     <CheckCircle2 size={16} />
-                    <span>Exact quote given before replacing any spare parts</span>
+                    <span>Exact quote given after physical inspection</span>
                   </div>
                 </div>
 

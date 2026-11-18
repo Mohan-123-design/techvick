@@ -3,26 +3,48 @@ import {
   LayoutDashboard, Package, ShoppingCart, Wrench, MessageSquare, Shield,
   Plus, Edit, Trash2, Search, Phone,
   Mail, MapPin, Eye, X, RefreshCw,
-  UserCheck
+  UserCheck, Laptop, Network, Printer, Zap, Database, Cpu, Home,
+  Palette, Sliders, CheckCircle2, Check, Sparkles, ArrowRight
 } from 'lucide-react';
 import { productsApi, ordersApi, servicesApi, usersApi } from '../utils/api';
 import { CATEGORIES } from '../constants';
+import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
 import './AdminDashboard.css';
 
+export const SERVICE_CATALOG_CATEGORIES = [
+  { id: 'hardware', name: 'Hardware & Chip-Level Repairs', icon: 'Laptop' },
+  { id: 'networking', name: 'Networking & Structured Cabling', icon: 'Network' },
+  { id: 'cctv_printers', name: 'CCTV Surveillance & Printers', icon: 'Printer' },
+  { id: 'upgrades', name: 'High-Speed Hardware Upgrades', icon: 'Zap' },
+  { id: 'data_recovery', name: 'Clean-Room Data Recovery', icon: 'Database' },
+  { id: 'pc_builds', name: 'Custom Gaming & Workstation PCs', icon: 'Cpu' },
+  { id: 'site_visit', name: 'Doorstep Site Visits & AMC', icon: 'Home' },
+];
+
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, products, orders, services, inquiries, warranty
+  const [activeTab, setActiveTab] = useState('overview'); // overview, services_catalog, products, orders, services, inquiries, appearance
+
+  // Theme & Appearance controls from Store Portal
+  const {
+    theme, isDark, toggleTheme, accent, setAccent,
+    density, setDensity, fontFamily, setFontFamily,
+    accentPresets, resetAppearance
+  } = useTheme();
 
   // Data states
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [servicesCatalog, setServicesCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Filters & Search
   const [productSearch, setProductSearch] = useState('');
   const [productCategory, setProductCategory] = useState('all');
+  const [serviceSearch, setServiceSearch] = useState('');
+  const [serviceCatalogCategory, setServiceCatalogCategory] = useState('all');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
   const [serviceStatusFilter, setServiceStatusFilter] = useState('all');
   const [inquiryStatusFilter, setInquiryStatusFilter] = useState('all');
@@ -30,6 +52,8 @@ export default function AdminDashboard() {
   // Modals
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null); // null = creating new
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [orderDetailsModal, setOrderDetailsModal] = useState(null);
@@ -52,6 +76,19 @@ export default function AdminDashboard() {
     specDisplay: '',
   });
 
+  const [serviceForm, setServiceForm] = useState({
+    title: '',
+    category: 'hardware',
+    badge: 'Specialist Service',
+    description: '',
+    turnaround: 'Same Day / 24 Hours',
+    repair_warranty: 'Written Store Guarantee',
+    features: '',
+    price: '',
+    icon_name: 'Wrench',
+    is_active: true,
+  });
+
   const [assignForm, setAssignForm] = useState({
     technician_name: 'Ramesh Kumar (Senior Hardware Engineer)',
     technician_phone: '+91 98765 00112',
@@ -64,17 +101,19 @@ export default function AdminDashboard() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [prodRes, ordRes, srvRes, inqRes] = await Promise.allSettled([
+      const [prodRes, ordRes, srvRes, inqRes, catRes] = await Promise.allSettled([
         productsApi.getAll({ limit: 100 }),
         ordersApi.getAllAdmin(),
         servicesApi.getAllAdmin(),
         usersApi.getInquiriesAdmin(),
+        servicesApi.getCatalog({ include_inactive: true }),
       ]);
 
       if (prodRes.status === 'fulfilled') setProducts(prodRes.value?.products || []);
       if (ordRes.status === 'fulfilled') setOrders(ordRes.value?.orders || []);
       if (srvRes.status === 'fulfilled') setServiceRequests(srvRes.value?.service_requests || []);
       if (inqRes.status === 'fulfilled') setInquiries(inqRes.value?.inquiries || []);
+      if (catRes.status === 'fulfilled') setServicesCatalog(catRes.value?.services || []);
     } catch (err) {
       console.error('Failed to load dashboard data', err);
     } finally {
@@ -305,7 +344,145 @@ export default function AdminDashboard() {
     }
   };
 
+  // ==========================================
+  // SERVICE CATALOG CRUD HANDLERS
+  // ==========================================
+  const renderServiceIcon = (iconName) => {
+    switch (iconName) {
+      case 'Laptop': return <Laptop size={20} />;
+      case 'Network': return <Network size={20} />;
+      case 'Printer': return <Printer size={20} />;
+      case 'Zap': return <Zap size={20} />;
+      case 'Database': return <Database size={20} />;
+      case 'Cpu': return <Cpu size={20} />;
+      case 'Home': return <Home size={20} />;
+      default: return <Wrench size={20} />;
+    }
+  };
+
+  const handleOpenServiceModal = (service = null) => {
+    if (service) {
+      setEditingService(service);
+      setServiceForm({
+        title: service.title || '',
+        category: service.category || 'hardware',
+        badge: service.badge || '',
+        description: service.description || '',
+        turnaround: service.turnaround || 'Same Day / 24 Hours',
+        repair_warranty: service.repair_warranty || service.repairWarranty || 'Written Store Guarantee',
+        features: Array.isArray(service.features) ? service.features.join('\n') : (service.features || ''),
+        price: service.price || '',
+        icon_name: service.icon_name || 'Wrench',
+        is_active: service.is_active !== undefined ? service.is_active : true,
+      });
+    } else {
+      setEditingService(null);
+      setServiceForm({
+        title: '',
+        category: 'hardware',
+        badge: 'Specialist Service',
+        description: '',
+        turnaround: 'Same Day / 24 Hours',
+        repair_warranty: 'Written Store Guarantee',
+        features: '',
+        price: '',
+        icon_name: 'Wrench',
+        is_active: true,
+      });
+    }
+    setServiceModalOpen(true);
+  };
+
+  const handleServiceSubmit = async (e) => {
+    e.preventDefault();
+    if (!serviceForm.title.trim()) {
+      toast.error('Service Title is required');
+      return;
+    }
+
+    const featuresArray = serviceForm.features
+      ? serviceForm.features.split('\n').map((f) => f.trim()).filter(Boolean)
+      : [];
+
+    const payload = {
+      title: serviceForm.title.trim(),
+      category: serviceForm.category || 'hardware',
+      badge: serviceForm.badge?.trim() || 'Specialist Service',
+      description: serviceForm.description?.trim() || '',
+      turnaround: serviceForm.turnaround?.trim() || 'Same Day / 24 Hours',
+      repair_warranty: serviceForm.repair_warranty?.trim() || 'Written Store Guarantee',
+      features: featuresArray,
+      price: serviceForm.price?.trim() || '',
+      icon_name: serviceForm.icon_name || 'Wrench',
+      is_active: serviceForm.is_active,
+    };
+
+    try {
+      if (editingService) {
+        const sId = editingService._id || editingService.id;
+        const res = await servicesApi.updateCatalogItem(sId, payload);
+        toast.success(`Updated service "${payload.title}" successfully!`);
+        setServicesCatalog((prev) =>
+          prev.map((s) => (String(s._id || s.id) === String(sId) ? { ...s, ...payload, ...(res?.service || {}) } : s))
+        );
+      } else {
+        const res = await servicesApi.createCatalogItem(payload);
+        toast.success(`Created service "${payload.title}" in catalog!`);
+        const createdSvc = res?.service || {
+          ...payload,
+          _id: 'tvc-srv-' + Date.now(),
+          id: 'tvc-srv-' + Date.now(),
+        };
+        setServicesCatalog((prev) => [createdSvc, ...prev]);
+      }
+      setServiceModalOpen(false);
+      setEditingService(null);
+      loadDashboardData();
+    } catch (err) {
+      toast.error(err.message || 'Error saving service');
+    }
+  };
+
+  const handleDeleteService = async (service) => {
+    const sId = service._id || service.id;
+    if (window.confirm(`Are you sure you want to delete service "${service.title}"?`)) {
+      try {
+        await servicesApi.deleteCatalogItem(sId);
+        toast.success(`Deleted service "${service.title}"`);
+        setServicesCatalog((prev) => prev.filter((s) => String(s._id || s.id) !== String(sId)));
+        loadDashboardData();
+      } catch (err) {
+        toast.error(err.message || 'Error deleting service');
+      }
+    }
+  };
+
+  const handleToggleServiceStatus = async (service) => {
+    const sId = service._id || service.id;
+    const nextState = !service.is_active;
+    try {
+      await servicesApi.updateCatalogItem(sId, { is_active: nextState });
+      toast.success(`Service marked as ${nextState ? 'Active' : 'Inactive'}`);
+      setServicesCatalog((prev) =>
+        prev.map((s) => (String(s._id || s.id) === String(sId) ? { ...s, is_active: nextState } : s))
+      );
+    } catch (err) {
+      toast.error(err.message || 'Failed to update service status');
+    }
+  };
+
   // Filtered Lists
+  const filteredCatalogServices = servicesCatalog.filter((s) => {
+    const matchCat =
+      serviceCatalogCategory === 'all' ||
+      s.category?.toLowerCase() === serviceCatalogCategory.toLowerCase();
+    const matchSearch =
+      !serviceSearch ||
+      (s.title || '').toLowerCase().includes(serviceSearch.toLowerCase()) ||
+      (s.description || '').toLowerCase().includes(serviceSearch.toLowerCase()) ||
+      (s.category || '').toLowerCase().includes(serviceSearch.toLowerCase());
+    return matchCat && matchSearch;
+  });
   const filteredProducts = products.filter((p) => {
     const matchCat = productCategory === 'all' || p.category?.toLowerCase() === productCategory.toLowerCase();
     const matchSearch =
@@ -368,11 +545,29 @@ export default function AdminDashboard() {
           </button>
 
           <button
+            className={`admin-tab ${activeTab === 'services_catalog' ? 'active' : ''}`}
+            onClick={() => setActiveTab('services_catalog')}
+          >
+            <Wrench size={18} />
+            <span>Services Catalog ({servicesCatalog.length})</span>
+            <span className="tab-pill blue">Focus</span>
+          </button>
+
+          <button
+            className={`admin-tab ${activeTab === 'services' ? 'active' : ''}`}
+            onClick={() => setActiveTab('services')}
+          >
+            <Laptop size={18} />
+            <span>Service Tickets ({serviceRequests.length})</span>
+            {activeServiceVisits > 0 && <span className="tab-pill blue">{activeServiceVisits}</span>}
+          </button>
+
+          <button
             className={`admin-tab ${activeTab === 'products' ? 'active' : ''}`}
             onClick={() => setActiveTab('products')}
           >
             <Package size={18} />
-            <span>Products CRUD ({products.length})</span>
+            <span>Products ({products.length})</span>
           </button>
 
           <button
@@ -385,21 +580,20 @@ export default function AdminDashboard() {
           </button>
 
           <button
-            className={`admin-tab ${activeTab === 'services' ? 'active' : ''}`}
-            onClick={() => setActiveTab('services')}
-          >
-            <Wrench size={18} />
-            <span>Service & Site Visits ({serviceRequests.length})</span>
-            {activeServiceVisits > 0 && <span className="tab-pill blue">{activeServiceVisits}</span>}
-          </button>
-
-          <button
             className={`admin-tab ${activeTab === 'inquiries' ? 'active' : ''}`}
             onClick={() => setActiveTab('inquiries')}
           >
             <MessageSquare size={18} />
             <span>User Queries ({inquiries.length})</span>
             {newInquiriesCount > 0 && <span className="tab-pill amber">{newInquiriesCount}</span>}
+          </button>
+
+          <button
+            className={`admin-tab ${activeTab === 'appearance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('appearance')}
+          >
+            <Palette size={18} />
+            <span>UI & Branding</span>
           </button>
         </div>
 
@@ -961,6 +1155,351 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ============================================================ */}
+        {/* 6. SERVICES CATALOG (FULL CRUD - 200% FOCUS) */}
+        {/* ============================================================ */}
+        {activeTab === 'services_catalog' && (
+          <div className="admin-tab-content animate-fadeIn">
+            {/* Strategy Notice Banner */}
+            <div className="service-strategy-banner">
+              <div className="strategy-icon-box">
+                <Sparkles size={22} />
+              </div>
+              <div className="strategy-content">
+                <strong>Services-First Operations Mode</strong>
+                <p>
+                  Per store policy, fixed pricing is unmentioned / left blank so walk-in customers and callers receive free counter diagnostics and custom quotes upon physical inspection.
+                </p>
+              </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="tab-action-bar">
+              <div className="action-search-group">
+                <div className="admin-search-wrap">
+                  <Search size={16} className="as-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search services by title, issue, or keyword..."
+                    value={serviceSearch}
+                    onChange={(e) => setServiceSearch(e.target.value)}
+                  />
+                  {serviceSearch && <button onClick={() => setServiceSearch('')}><X size={14} /></button>}
+                </div>
+
+                <select
+                  value={serviceCatalogCategory}
+                  onChange={(e) => setServiceCatalogCategory(e.target.value)}
+                  className="admin-select"
+                >
+                  <option value="all">All Service Sectors</option>
+                  {SERVICE_CATALOG_CATEGORIES.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button className="btn btn-primary" onClick={() => handleOpenServiceModal()}>
+                <Plus size={16} /> Add New Service
+              </button>
+            </div>
+
+            {/* Category Filter Chips */}
+            <div className="catalog-cat-chips">
+              <button
+                className={`cat-chip-btn ${serviceCatalogCategory === 'all' ? 'active' : ''}`}
+                onClick={() => setServiceCatalogCategory('all')}
+              >
+                All Sectors ({servicesCatalog.length})
+              </button>
+              {SERVICE_CATALOG_CATEGORIES.map((cat) => {
+                const count = servicesCatalog.filter(
+                  (s) => s.category?.toLowerCase() === cat.id.toLowerCase()
+                ).length;
+                return (
+                  <button
+                    key={cat.id}
+                    className={`cat-chip-btn ${serviceCatalogCategory === cat.id ? 'active' : ''}`}
+                    onClick={() => setServiceCatalogCategory(cat.id)}
+                  >
+                    {renderServiceIcon(cat.icon)}
+                    <span>{cat.name}</span>
+                    <span className="count-pill">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Services Table */}
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Service Offering</th>
+                    <th>Category</th>
+                    <th>Badge</th>
+                    <th>Turnaround</th>
+                    <th>Warranty</th>
+                    <th>Features</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCatalogServices.map((svc) => {
+                    const sId = svc._id || svc.id;
+                    const featuresList = Array.isArray(svc.features)
+                      ? svc.features
+                      : svc.features ? svc.features.split('\n') : [];
+                    return (
+                      <tr key={sId} className={svc.is_active === false ? 'row-inactive' : ''}>
+                        <td>
+                          <div className="service-title-cell">
+                            <div className="svc-icon-badge">
+                              {renderServiceIcon(svc.icon_name)}
+                            </div>
+                            <div>
+                              <strong>{svc.title}</strong>
+                              <p className="svc-desc-snippet">{svc.description}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="cat-chip">{svc.category?.toUpperCase()}</span>
+                        </td>
+                        <td>
+                          {svc.badge ? <span className="prod-badge-tag">{svc.badge}</span> : <span className="text-muted">—</span>}
+                        </td>
+                        <td>
+                          <span className="spec-val">{svc.turnaround || 'Same Day'}</span>
+                        </td>
+                        <td>
+                          <span className="spec-val">{svc.repair_warranty || svc.repairWarranty || 'Written Guarantee'}</span>
+                        </td>
+                        <td>
+                          <span className="feature-count-badge">
+                            {featuresList.length} items
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className={`status-toggle-btn ${svc.is_active !== false ? 'active' : 'inactive'}`}
+                            onClick={() => handleToggleServiceStatus(svc)}
+                            title="Click to toggle Active/Inactive"
+                          >
+                            <span className="dot"></span>
+                            {svc.is_active !== false ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div className="row-actions">
+                            <button
+                              className="action-icon-btn edit"
+                              onClick={() => handleOpenServiceModal(svc)}
+                              title="Edit Service"
+                            >
+                              <Edit size={15} />
+                            </button>
+                            <button
+                              className="action-icon-btn delete"
+                              onClick={() => handleDeleteService(svc)}
+                              title="Delete Service"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {filteredCatalogServices.length === 0 && (
+                <div className="empty-box">
+                  <p>No service offerings found matching "{serviceSearch || serviceCatalogCategory}".</p>
+                  <button className="btn btn-primary btn-sm" onClick={() => handleOpenServiceModal()}>
+                    <Plus size={14} /> Create New Service Offering
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* 7. UI & BRANDING CUSTOMIZER (AXORA-INSPIRED) */}
+        {/* ============================================================ */}
+        {activeTab === 'appearance' && (
+          <div className="admin-tab-content animate-fadeIn appearance-tab-content">
+            <div className="appearance-header-card">
+              <div className="app-header-left">
+                <h2>
+                  <Palette size={22} className="accent-text" /> Storefront Branding & UI Appearance
+                </h2>
+                <p>
+                  Live real-time customizer inspired by modern dark-slate SaaS design tokens (Axora). Changes apply instantly across the storefront, cards, badges, and admin dashboard.
+                </p>
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={resetAppearance}>
+                <RefreshCw size={14} /> Reset Defaults
+              </button>
+            </div>
+
+            <div className="appearance-grid">
+              {/* Color Mode / Theme */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Sliders size={18} />
+                  <h3>Color Mode</h3>
+                </div>
+                <p className="app-card-sub">Choose between Axora slate-navy dark mode or clean high-contrast light mode.</p>
+                <div className="theme-toggle-row">
+                  <button
+                    className={`theme-mode-btn ${isDark ? 'active' : ''}`}
+                    onClick={() => theme !== 'dark' && toggleTheme()}
+                  >
+                    <span className="mode-indicator dark"></span>
+                    <div>
+                      <strong>Dark Slate-Navy</strong>
+                      <span>Axora #0b1020 • High-tech glassmorphism</span>
+                    </div>
+                  </button>
+                  <button
+                    className={`theme-mode-btn ${!isDark ? 'active' : ''}`}
+                    onClick={() => theme !== 'light' && toggleTheme()}
+                  >
+                    <span className="mode-indicator light"></span>
+                    <div>
+                      <strong>Clean Light</strong>
+                      <span>Bright daylight mode • Crisp typography</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Accent Color Presets */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Sparkles size={18} />
+                  <h3>Brand Accent Palette</h3>
+                </div>
+                <p className="app-card-sub">Select the primary accent color used for buttons, active tabs, glowing borders, and focus rings.</p>
+                <div className="color-presets-grid">
+                  {Object.entries(accentPresets).map(([key, preset]) => {
+                    const isSelected = accent === key;
+                    return (
+                      <button
+                        key={key}
+                        className={`color-preset-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => setAccent(key)}
+                      >
+                        <div className="preset-swatch" style={{ background: preset.primary }}>
+                          {isSelected && <Check size={16} className="preset-check" />}
+                        </div>
+                        <div className="preset-info">
+                          <strong>{preset.name}</strong>
+                          <span className="preset-hex">{preset.primary}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Typography Font Stack */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Laptop size={18} />
+                  <h3>Storefront Typography</h3>
+                </div>
+                <p className="app-card-sub">Select the display and body font stack for the entire application.</p>
+                <div className="font-presets-grid">
+                  {[
+                    { id: 'Plus Jakarta Sans', label: 'Plus Jakarta Sans', note: 'Axora Modern Sans' },
+                    { id: 'DM Sans', label: 'DM Sans', note: 'Clean Editorial Sans' },
+                    { id: 'Outfit', label: 'Outfit', note: 'Techvick Tech Brand' },
+                    { id: 'Inter', label: 'Inter', note: 'High Legibility Standard' },
+                    { id: 'Sora', label: 'Sora', note: 'Futuristic Display' },
+                  ].map((f) => {
+                    const isSelected = fontFamily === f.id;
+                    return (
+                      <button
+                        key={f.id}
+                        className={`font-preset-card ${isSelected ? 'selected' : ''}`}
+                        style={{ fontFamily: f.id }}
+                        onClick={() => setFontFamily(f.id)}
+                      >
+                        <div className="font-header">
+                          <strong style={{ fontFamily: f.id }}>{f.label}</strong>
+                          {isSelected && <Check size={15} className="accent-text" />}
+                        </div>
+                        <span className="font-sample">Aa Bb Cc 1 2 3 • {f.note}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Layout Density */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Sliders size={18} />
+                  <h3>Layout Density</h3>
+                </div>
+                <p className="app-card-sub">Control spacing and padding across cards, tables, and dashboards.</p>
+                <div className="density-toggle-group">
+                  <button
+                    className={`density-btn ${density === 'comfortable' ? 'active' : ''}`}
+                    onClick={() => setDensity('comfortable')}
+                  >
+                    <strong>Comfortable</strong>
+                    <span>Standard spacious padding • Recommended for storefront</span>
+                  </button>
+                  <button
+                    className={`density-btn ${density === 'compact' ? 'active' : ''}`}
+                    onClick={() => setDensity('compact')}
+                  >
+                    <strong>Compact</strong>
+                    <span>Condensed data view • Recommended for high-volume store counter</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Interactive Preview Card */}
+            <div className="live-preview-section">
+              <h3>Live Component Preview</h3>
+              <p className="text-muted">Real-time rendering of your active theme, accent palette, and typography:</p>
+              <div className="live-preview-card">
+                <div className="preview-top-row">
+                  <div className="preview-badge-row">
+                    <span className="preview-pill">Specialist Service</span>
+                    <span className="preview-status-pill">Active in Store</span>
+                  </div>
+                  <span className="preview-category">CHIP-LEVEL HARDWARE</span>
+                </div>
+                <h3 className="preview-title">MacBook Pro M-Series Motherboard Diagnostics & Liquid Clean</h3>
+                <p className="preview-desc">
+                  State-of-the-art ultrasonic cleansing and component-level micro-soldering for corroded traces, charging ICs, and backlight circuits at Techvick Tatabad showroom.
+                </p>
+                <div className="preview-checklist">
+                  <div className="preview-item"><CheckCircle2 size={16} /> Free Counter Assessment</div>
+                  <div className="preview-item"><CheckCircle2 size={16} /> Written Store Warranty</div>
+                  <div className="preview-item"><CheckCircle2 size={16} /> Genuine OEM Spares</div>
+                </div>
+                <div className="preview-action-row">
+                  <button className="btn btn-primary">
+                    Book Service Now <ArrowRight size={16} />
+                  </button>
+                  <button className="btn btn-secondary">
+                    WhatsApp Technician
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ============================================================ */}
@@ -1293,6 +1832,152 @@ export default function AdminDashboard() {
                 Close Invoice
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* MODAL: ADD / EDIT SERVICE OFFERING */}
+      {/* ============================================================ */}
+      {serviceModalOpen && (
+        <div className="modal-overlay" onClick={() => setServiceModalOpen(false)}>
+          <div className="modal-container admin-service-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setServiceModalOpen(false)}>
+              <X size={20} />
+            </button>
+
+            <h2>{editingService ? 'Edit Service Offering' : 'Add New Service Offering'}</h2>
+            <p className="modal-sub">
+              Manage service capabilities, repair turnaround, written warranty guarantees, and features.
+            </p>
+
+            <form onSubmit={handleServiceSubmit} className="admin-service-form">
+              <div className="form-row-2">
+                <div className="form-field">
+                  <label>Service Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. MacBook & Gaming Laptop Motherboard Repair"
+                    value={serviceForm.title}
+                    onChange={(e) => setServiceForm({ ...serviceForm, title: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Service Sector / Category *</label>
+                  <select
+                    value={serviceForm.category}
+                    onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
+                  >
+                    {SERVICE_CATALOG_CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row-2">
+                <div className="form-field">
+                  <label>Promotional Badge / Highlight</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Specialist Service, Express 45-Mins, Coimbatore Wide"
+                    value={serviceForm.badge}
+                    onChange={(e) => setServiceForm({ ...serviceForm, badge: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Representative Icon</label>
+                  <select
+                    value={serviceForm.icon_name}
+                    onChange={(e) => setServiceForm({ ...serviceForm, icon_name: e.target.value })}
+                  >
+                    <option value="Laptop">Laptop / Computer</option>
+                    <option value="Network">Networking / LAN</option>
+                    <option value="Printer">Printer / CCTV</option>
+                    <option value="Zap">Zap / High-Speed Upgrade</option>
+                    <option value="Database">Database / Data Recovery</option>
+                    <option value="Cpu">CPU / Custom PC Build</option>
+                    <option value="Home">Home / Doorstep Site Visit</option>
+                    <option value="Wrench">Wrench / General Tool</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row-2">
+                <div className="form-field">
+                  <label>Turnaround Time</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Same Day / 24 Hours, 30-45 Minutes"
+                    value={serviceForm.turnaround}
+                    onChange={(e) => setServiceForm({ ...serviceForm, turnaround: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Written Warranty Coverage</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Written Store Guarantee, Up to 1-Year Guarantee"
+                    value={serviceForm.repair_warranty}
+                    onChange={(e) => setServiceForm({ ...serviceForm, repair_warranty: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label>Pricing / Amount (Optional - Blank per Service Strategy)</label>
+                <input
+                  type="text"
+                  placeholder="Leave empty / blank for 'Quote upon Diagnosis'"
+                  value={serviceForm.price}
+                  onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
+                />
+                <small className="form-hint" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+                  Recommendation: Keep blank. Store policy provides free counter assessment and custom quotation upon physical examination.
+                </small>
+              </div>
+
+              <div className="form-field">
+                <label>Service Description</label>
+                <textarea
+                  rows={3}
+                  placeholder="Detailed description of the diagnostics, repair procedure, or equipment serviced..."
+                  value={serviceForm.description}
+                  onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                />
+              </div>
+
+              <div className="form-field">
+                <label>Features & Checklist (One feature per line)</label>
+                <textarea
+                  rows={4}
+                  placeholder="Free on-the-spot counter assessment&#10;Motherboard & chip-level micro-soldering&#10;Genuine brand replacement components&#10;Clean-room testing & thermal burn-in"
+                  value={serviceForm.features}
+                  onChange={(e) => setServiceForm({ ...serviceForm, features: e.target.value })}
+                />
+              </div>
+
+              <div className="form-field checkbox-field" style={{ margin: '0.5rem 0' }}>
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={serviceForm.is_active}
+                    onChange={(e) => setServiceForm({ ...serviceForm, is_active: e.target.checked })}
+                  />
+                  <span>Active & Visible on Customer Services Page</span>
+                </label>
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setServiceModalOpen(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editingService ? 'Save Changes' : 'Create Service Offering'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

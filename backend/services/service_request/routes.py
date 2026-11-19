@@ -33,6 +33,44 @@ class TechnicianAssign(BaseModel):
     notes: Optional[str] = None
 
 
+class ServiceTicketAdminCreate(BaseModel):
+    customer_name: str
+    customer_phone: str
+    customer_email: Optional[str] = ""
+    service_mode: str = "in_store"  # in_store, site_visit
+    device_type: str = "laptop"  # laptop, desktop, imac, printer, cctv, networking
+    brand: str = ""
+    model: str = ""
+    issue_category: str = "general_repair"
+    issue_description: str = ""
+    urgency: str = "standard"  # standard, urgent
+    address: Optional[str] = ""
+    preferred_date: Optional[str] = None
+    preferred_time_slot: Optional[str] = "10:00 AM - 01:00 PM"
+    estimated_cost: Optional[float] = 0.0
+    status: str = "submitted"  # submitted, assigned, in_progress, completed, cancelled
+    assigned_technician: Optional[str] = None
+    technician_phone: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class ServiceTicketAdminUpdate(BaseModel):
+    customer_name: Optional[str] = None
+    customer_phone: Optional[str] = None
+    customer_email: Optional[str] = None
+    service_mode: Optional[str] = None
+    device_type: Optional[str] = None
+    brand: Optional[str] = None
+    model: Optional[str] = None
+    issue_description: Optional[str] = None
+    status: Optional[str] = None
+    estimated_cost: Optional[float] = None
+    assigned_technician: Optional[str] = None
+    technician_phone: Optional[str] = None
+    address: Optional[str] = None
+    notes: Optional[str] = None
+
+
 class WarrantyClaimCreate(BaseModel):
     serial_number: str
     customer_name: Optional[str] = "Customer"
@@ -315,6 +353,80 @@ async def assign_technician(
     if not result:
         raise HTTPException(status_code=404, detail="Service request not found")
     return {"service_request": serialize_doc(result), "message": "Technician assigned successfully"}
+
+
+@router.post("/requests", status_code=status.HTTP_201_CREATED)
+async def admin_create_service_ticket(
+    ticket: ServiceTicketAdminCreate,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Manually create a walk-in or phone service ticket."""
+    collection = Database.get_collection(COLLECTION)
+    now = utc_now()
+    ticket_num = generate_ticket_number()
+    doc = {
+        "ticket_number": ticket_num,
+        **ticket.model_dump(),
+        "service_type": ticket.service_mode,
+        "notes": [f"[{now.strftime('%Y-%m-%d %H:%M')}] {ticket.notes}"] if ticket.notes else [],
+        "created_at": now,
+        "updated_at": now,
+    }
+    result = await collection.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return {"service_request": serialize_doc(doc), "message": f"Service ticket {ticket_num} created successfully!"}
+
+
+@router.put("/requests/{request_id}")
+async def admin_update_service_ticket(
+    request_id: str,
+    update_data: ServiceTicketAdminUpdate,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Update service ticket details."""
+    collection = Database.get_collection(COLLECTION)
+    try:
+        if ObjectId.is_valid(request_id):
+            query = {"_id": ObjectId(request_id)}
+        else:
+            query = {"ticket_number": request_id}
+
+        fields = {k: v for k, v in update_data.model_dump().items() if v is not None}
+        fields["updated_at"] = utc_now()
+        if "service_mode" in fields:
+            fields["service_type"] = fields["service_mode"]
+
+        result = await collection.find_one_and_update(
+            query,
+            {"$set": fields},
+            return_document=True,
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid request ID")
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Service request not found")
+    return {"service_request": serialize_doc(result), "message": "Service ticket updated successfully"}
+
+
+@router.delete("/requests/{request_id}")
+async def admin_delete_service_ticket(
+    request_id: str,
+    current_admin: dict = Depends(require_admin),
+):
+    """Admin endpoint: Delete a service request ticket."""
+    collection = Database.get_collection(COLLECTION)
+    try:
+        id_conds = [{"ticket_number": request_id}, {"id": request_id}]
+        if ObjectId.is_valid(request_id):
+            id_conds.append({"_id": ObjectId(request_id)})
+        result = await collection.find_one_and_delete({"$or": id_conds})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid request ID")
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Service request not found")
+    return {"message": f"Service ticket {request_id} removed successfully"}
 
 
 # -------------------------------------------------------------

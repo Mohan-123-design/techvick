@@ -35,6 +35,13 @@
   color: var(--primary-500);
 }
 
+.topbar-bullet {
+  color: var(--border-hover);
+  opacity: 0.5;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
 .topbar-divider {
   color: var(--border-hover);
   opacity: 0.6;

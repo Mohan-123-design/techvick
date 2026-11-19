@@ -64,6 +64,14 @@ async def get_current_user(
 ) -> dict:
     """Extract current user from JWT token."""
     if not credentials:
+        if settings.DEBUG:
+            # In local debug mode, provide seamless store manager credentials
+            return {
+                "sub": "admin-001",
+                "email": "techvickcomputers@gmail.com",
+                "role": "admin",
+                "name": "Store Manager"
+            }
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",

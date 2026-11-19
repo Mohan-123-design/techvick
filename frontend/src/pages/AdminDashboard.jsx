@@ -55,11 +55,34 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState(null); // null = creating new
   const [serviceModalOpen, setServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
+  const [editingTicket, setEditingTicket] = useState(null);
+  const [ticketSearch, setTicketSearch] = useState('');
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [orderDetailsModal, setOrderDetailsModal] = useState(null);
 
   // Forms
+  const [ticketForm, setTicketForm] = useState({
+    customer_name: '',
+    customer_phone: '',
+    customer_email: '',
+    service_mode: 'in_store',
+    device_type: 'laptop',
+    brand: '',
+    model: '',
+    issue_category: 'general_repair',
+    issue_description: '',
+    urgency: 'standard',
+    address: '',
+    preferred_date: '',
+    preferred_time_slot: '10:00 AM - 01:00 PM',
+    estimated_cost: '',
+    status: 'submitted',
+    assigned_technician: '',
+    technician_phone: '',
+    notes: '',
+  });
   const [productForm, setProductForm] = useState({
     name: '',
     category: 'laptops',
@@ -328,6 +351,128 @@ export default function AdminDashboard() {
   };
 
   // ==========================================
+  // SERVICE TICKETS CRUD (CREATE / EDIT / DELETE)
+  // ==========================================
+  const handleOpenTicketModal = (ticket = null) => {
+    if (ticket) {
+      setEditingTicket(ticket);
+      setTicketForm({
+        customer_name: ticket.customer_name || '',
+        customer_phone: ticket.customer_phone || '',
+        customer_email: ticket.customer_email || '',
+        service_mode: ticket.service_mode || ticket.service_type || 'in_store',
+        device_type: ticket.device_type || 'laptop',
+        brand: ticket.brand || '',
+        model: ticket.model || '',
+        issue_category: ticket.issue_category || 'general_repair',
+        issue_description: ticket.issue_description || '',
+        urgency: ticket.urgency || 'standard',
+        address: ticket.address || '',
+        preferred_date: ticket.preferred_date || '',
+        preferred_time_slot: ticket.preferred_time_slot || '10:00 AM - 01:00 PM',
+        estimated_cost: ticket.estimated_cost !== undefined ? ticket.estimated_cost : 499,
+        status: ticket.status || 'submitted',
+        assigned_technician: ticket.assigned_technician || '',
+        technician_phone: ticket.technician_phone || '',
+        notes: Array.isArray(ticket.notes) ? ticket.notes.join('\n') : (ticket.notes || ''),
+      });
+    } else {
+      setEditingTicket(null);
+      setTicketForm({
+        customer_name: '',
+        customer_phone: '',
+        customer_email: '',
+        service_mode: 'in_store',
+        device_type: 'laptop',
+        brand: '',
+        model: '',
+        issue_category: 'general_repair',
+        issue_description: '',
+        urgency: 'standard',
+        address: '',
+        preferred_date: '',
+        preferred_time_slot: '10:00 AM - 01:00 PM',
+        estimated_cost: '',
+        status: 'submitted',
+        assigned_technician: '',
+        technician_phone: '',
+        notes: '',
+      });
+    }
+    setTicketModalOpen(true);
+  };
+
+  const handleTicketSubmit = async (e) => {
+    e.preventDefault();
+    if (!ticketForm.customer_name.trim() || !ticketForm.customer_phone.trim()) {
+      toast.error('Customer name and contact phone are required');
+      return;
+    }
+
+    const payload = {
+      customer_name: ticketForm.customer_name.trim(),
+      customer_phone: ticketForm.customer_phone.trim(),
+      customer_email: ticketForm.customer_email.trim(),
+      service_mode: ticketForm.service_mode,
+      device_type: ticketForm.device_type,
+      brand: ticketForm.brand.trim(),
+      model: ticketForm.model.trim(),
+      issue_category: ticketForm.issue_category,
+      issue_description: ticketForm.issue_description.trim(),
+      urgency: ticketForm.urgency,
+      address: ticketForm.address.trim(),
+      preferred_date: ticketForm.preferred_date || null,
+      preferred_time_slot: ticketForm.preferred_time_slot,
+      estimated_cost: ticketForm.estimated_cost ? Number(ticketForm.estimated_cost) : 0,
+      status: ticketForm.status,
+      assigned_technician: ticketForm.assigned_technician.trim() || null,
+      technician_phone: ticketForm.technician_phone.trim() || null,
+      notes: ticketForm.notes ? ticketForm.notes.split('\n').filter(Boolean) : [],
+    };
+
+    try {
+      if (editingTicket) {
+        const tId = editingTicket._id || editingTicket.ticket_number;
+        await servicesApi.updateRequest(tId, payload);
+        toast.success(`Service ticket ${editingTicket.ticket_number || ''} updated!`);
+        setServiceRequests((prev) =>
+          prev.map((t) => (String(t._id || t.ticket_number) === String(tId) ? { ...t, ...payload } : t))
+        );
+      } else {
+        const res = await servicesApi.createAdminRequest(payload);
+        const newTicket = res?.service_request || {
+          ...payload,
+          _id: 'srv-' + Date.now(),
+          ticket_number: 'SRV-' + Math.floor(100000 + Math.random() * 900000),
+          created_at: new Date().toISOString(),
+        };
+        toast.success(`Service ticket ${newTicket.ticket_number} created successfully!`);
+        setServiceRequests((prev) => [newTicket, ...prev]);
+      }
+      setTicketModalOpen(false);
+      setEditingTicket(null);
+      loadDashboardData();
+    } catch (err) {
+      toast.error(err.message || 'Error saving service ticket');
+    }
+  };
+
+  const handleDeleteTicket = async (ticket) => {
+    const tId = ticket._id || ticket.ticket_number;
+    const ticketNum = ticket.ticket_number || 'this ticket';
+    if (window.confirm(`Are you sure you want to delete service ticket "${ticketNum}" for ${ticket.customer_name}?`)) {
+      try {
+        await servicesApi.deleteRequest(tId);
+        toast.success(`Service ticket ${ticketNum} deleted`);
+        setServiceRequests((prev) => prev.filter((t) => String(t._id || t.ticket_number) !== String(tId)));
+        loadDashboardData();
+      } catch (err) {
+        toast.error(err.message || 'Error deleting ticket');
+      }
+    }
+  };
+
+  // ==========================================
   // INQUIRIES HANDLER
   // ==========================================
   const handleInquiryStatusChange = async (inquiryId, newStatus) => {
@@ -498,7 +643,19 @@ export default function AdminDashboard() {
   });
 
   const filteredServices = serviceRequests.filter((s) => {
-    return serviceStatusFilter === 'all' || s.status === serviceStatusFilter;
+    const matchStatus = serviceStatusFilter === 'all' || s.status === serviceStatusFilter;
+    if (!ticketSearch) return matchStatus;
+    const q = ticketSearch.toLowerCase();
+    const matchSearch =
+      (s.ticket_number || '').toLowerCase().includes(q) ||
+      (s.customer_name || '').toLowerCase().includes(q) ||
+      (s.customer_phone || '').toLowerCase().includes(q) ||
+      (s.brand || '').toLowerCase().includes(q) ||
+      (s.model || '').toLowerCase().includes(q) ||
+      (s.device_type || '').toLowerCase().includes(q) ||
+      (s.issue_description || '').toLowerCase().includes(q) ||
+      (s.address || '').toLowerCase().includes(q);
+    return matchStatus && matchSearch;
   });
 
   const filteredInquiries = inquiries.filter((i) => {
@@ -972,13 +1129,29 @@ export default function AdminDashboard() {
         )}
 
         {/* ============================================================ */}
-        {/* 4. SERVICE REQUESTS & SITE VISITS */}
+        {/* 4. SERVICE REQUESTS & SITE VISITS (FULL ADMIN CRUD) */}
         {/* ============================================================ */}
         {activeTab === 'services' && (
           <div className="admin-tab-content animate-fadeIn">
             <div className="tab-action-bar">
               <div className="action-search-group">
-                <span className="bar-label">Filter by Status:</span>
+                <div className="search-input-wrap">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search ticket #, customer, phone, brand..."
+                    value={ticketSearch}
+                    onChange={(e) => setTicketSearch(e.target.value)}
+                    className="admin-search-input"
+                  />
+                  {ticketSearch && (
+                    <button className="clear-search-btn" onClick={() => setTicketSearch('')}>
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <span className="bar-label">Status:</span>
                 <select
                   value={serviceStatusFilter}
                   onChange={(e) => setServiceStatusFilter(e.target.value)}
@@ -992,6 +1165,10 @@ export default function AdminDashboard() {
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
+
+              <button className="btn btn-primary" onClick={() => handleOpenTicketModal()}>
+                <Plus size={16} /> Create Service Ticket
+              </button>
             </div>
 
             <div className="admin-table-wrap">
@@ -1049,7 +1226,7 @@ export default function AdminDashboard() {
                             <span className="unassigned-text">Unassigned</span>
                           )}
                         </td>
-                        <td>{formatPrice(srv.estimated_cost || 499)}</td>
+                        <td>{srv.estimated_cost ? formatPrice(srv.estimated_cost) : <span style={{ color: 'var(--text-secondary)' }}>Diagnostic</span>}</td>
                         <td>
                           <select
                             value={srv.status}
@@ -1065,12 +1242,29 @@ export default function AdminDashboard() {
                           </select>
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => handleOpenAssignModal(srv)}
-                          >
-                            <UserCheck size={14} /> Assign Tech
-                          </button>
+                          <div className="table-actions">
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => handleOpenAssignModal(srv)}
+                              title="Assign field or bench technician"
+                            >
+                              <UserCheck size={14} /> Assign
+                            </button>
+                            <button
+                              className="btn-icon-table edit"
+                              onClick={() => handleOpenTicketModal(srv)}
+                              title="Edit Service Ticket Details"
+                            >
+                              <Edit size={15} />
+                            </button>
+                            <button
+                              className="btn-icon-table delete"
+                              onClick={() => handleDeleteTicket(srv)}
+                              title="Delete Service Ticket"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1078,7 +1272,7 @@ export default function AdminDashboard() {
                   {filteredServices.length === 0 && (
                     <tr>
                       <td colSpan={8} className="table-empty">
-                        No service requests found with status "{serviceStatusFilter}".
+                        No service requests found matching your filter or search criteria.
                       </td>
                     </tr>
                   )}
@@ -2153,6 +2347,224 @@ export default function AdminDashboard() {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   {editingService ? 'Save Changes' : 'Create Service Offering'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* 5. CREATE / EDIT SERVICE TICKET MODAL */}
+      {/* ============================================================ */}
+      {ticketModalOpen && (
+        <div className="modal-overlay" onClick={() => setTicketModalOpen(false)}>
+          <div className="modal-container admin-ticket-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setTicketModalOpen(false)}>
+              <X size={20} />
+            </button>
+
+            <h2>{editingTicket ? `Edit Ticket ${editingTicket.ticket_number}` : 'Create New Service Ticket'}</h2>
+            <p className="modal-sub">
+              Direct counter intake, doorstep site visit dispatch, diagnostics logging & technician assignment.
+            </p>
+
+            <form onSubmit={handleTicketSubmit} className="admin-modal-form">
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Customer Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Ramesh Kumar"
+                    value={ticketForm.customer_name}
+                    onChange={(e) => setTicketForm({ ...ticketForm, customer_name: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Customer Phone *</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="e.g. 8807023322"
+                    value={ticketForm.customer_phone}
+                    onChange={(e) => setTicketForm({ ...ticketForm, customer_phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Customer Email</label>
+                  <input
+                    type="email"
+                    placeholder="customer@gmail.com (optional)"
+                    value={ticketForm.customer_email}
+                    onChange={(e) => setTicketForm({ ...ticketForm, customer_email: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Service Mode *</label>
+                  <select
+                    value={ticketForm.service_mode}
+                    onChange={(e) => setTicketForm({ ...ticketForm, service_mode: e.target.value })}
+                  >
+                    <option value="in_store">🏪 Walk-In to Tatabad Store</option>
+                    <option value="site_visit">🏠 Doorstep Site Visit (Coimbatore)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Device Type *</label>
+                  <select
+                    value={ticketForm.device_type}
+                    onChange={(e) => setTicketForm({ ...ticketForm, device_type: e.target.value })}
+                  >
+                    <option value="laptop">Laptop</option>
+                    <option value="desktop">Desktop PC / Workstation</option>
+                    <option value="imac">Apple iMac / Mac Mini</option>
+                    <option value="printer">Printer (Laser / InkTank)</option>
+                    <option value="cctv">CCTV Surveillance & DVR</option>
+                    <option value="networking">Networking & Wi-Fi Switch</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label>Brand & Model</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                    <input
+                      type="text"
+                      placeholder="Brand (e.g. Dell, HP, Lenovo)"
+                      value={ticketForm.brand}
+                      onChange={(e) => setTicketForm({ ...ticketForm, brand: e.target.value })}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Model (e.g. ThinkPad T480)"
+                      value={ticketForm.model}
+                      onChange={(e) => setTicketForm({ ...ticketForm, model: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Issue Category</label>
+                  <select
+                    value={ticketForm.issue_category}
+                    onChange={(e) => setTicketForm({ ...ticketForm, issue_category: e.target.value })}
+                  >
+                    <option value="general_repair">General Diagnostic & Repair</option>
+                    <option value="screen_display">Display / Screen Damage</option>
+                    <option value="battery_power">Power Supply & Battery</option>
+                    <option value="motherboard_chip">Motherboard & Chip-Level Micro-Soldering</option>
+                    <option value="slow_upgrade">High-Speed SSD & RAM Upgrade</option>
+                    <option value="os_software">OS Clean Install & Driver Config</option>
+                    <option value="printer_repair">Printer Toner / Paper Jam / Roller</option>
+                    <option value="cctv_network">CCTV Online DVR / Cabling Setup</option>
+                    <option value="data_recovery">Clean-Room Hard Drive Data Recovery</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label>Urgency Level</label>
+                  <select
+                    value={ticketForm.urgency}
+                    onChange={(e) => setTicketForm({ ...ticketForm, urgency: e.target.value })}
+                  >
+                    <option value="standard">Standard Priority</option>
+                    <option value="urgent">⚡ Urgent (Express Turnaround)</option>
+                  </select>
+                </div>
+              </div>
+
+              {ticketForm.service_mode === 'site_visit' && (
+                <div className="form-field">
+                  <label>Doorstep Service / Pickup Address *</label>
+                  <input
+                    type="text"
+                    required={ticketForm.service_mode === 'site_visit'}
+                    placeholder="Enter full address & nearby landmark in Coimbatore..."
+                    value={ticketForm.address}
+                    onChange={(e) => setTicketForm({ ...ticketForm, address: e.target.value })}
+                  />
+                </div>
+              )}
+
+              <div className="form-field">
+                <label>Issue Description & Symptoms</label>
+                <textarea
+                  rows={3}
+                  placeholder="Detailed customer complaints, diagnostic observations, physical condition..."
+                  value={ticketForm.issue_description}
+                  onChange={(e) => setTicketForm({ ...ticketForm, issue_description: e.target.value })}
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Estimated Cost (₹)</label>
+                  <input
+                    type="number"
+                    placeholder="0 = Quote upon Diagnosis"
+                    value={ticketForm.estimated_cost}
+                    onChange={(e) => setTicketForm({ ...ticketForm, estimated_cost: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Ticket Status</label>
+                  <select
+                    value={ticketForm.status}
+                    onChange={(e) => setTicketForm({ ...ticketForm, status: e.target.value })}
+                  >
+                    <option value="submitted">Submitted (Awaiting Review)</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="assigned">Technician Assigned</option>
+                    <option value="in_progress">In Progress / Bench Testing</option>
+                    <option value="completed">Completed & Ready for Delivery</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Assigned Technician</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Ramesh Kumar (Senior Hardware Engineer)"
+                    value={ticketForm.assigned_technician}
+                    onChange={(e) => setTicketForm({ ...ticketForm, assigned_technician: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Technician Phone</label>
+                  <input
+                    type="tel"
+                    placeholder="8807023322"
+                    value={ticketForm.technician_phone}
+                    onChange={(e) => setTicketForm({ ...ticketForm, technician_phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label>Internal Store Notes (One note per line)</label>
+                <textarea
+                  rows={2}
+                  placeholder="Spare components ordered, customer notified via WhatsApp, etc."
+                  value={ticketForm.notes}
+                  onChange={(e) => setTicketForm({ ...ticketForm, notes: e.target.value })}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setTicketModalOpen(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editingTicket ? 'Update Service Ticket' : 'Create Service Ticket'}
                 </button>
               </div>
             </form>

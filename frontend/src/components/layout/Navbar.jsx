@@ -35,7 +35,6 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/products', label: 'Products', hasDropdown: true },
     { to: '/services', label: 'Services' },
-    { to: '/book-service', label: 'Book Service' },
     { to: '/warranty', label: 'Warranty' },
     { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact' },
@@ -49,14 +48,14 @@ export default function Navbar() {
           <div className="topbar-left">
             <span className="topbar-item">
               <MapPin size={13} className="topbar-icon" />
-              <span>46, 8th St, Tatabad, Coimbatore - 641012</span>
+              <span>46, 8th St, Tatabad, Coimbatore</span>
             </span>
-            <span className="topbar-divider">|</span>
+            <span className="topbar-bullet">•</span>
             <span className="topbar-item">
               <Clock size={13} className="topbar-icon" />
-              <span>Mon - Sat: 10:00 AM – 8:00 PM | Sun: 10:00 AM – 4:00 PM</span>
+              <span>Mon - Sat: 10 AM – 8 PM • Sun: 10 AM – 4 PM</span>
             </span>
-            <span className="topbar-divider hide-mobile">|</span>
+            <span className="topbar-bullet hide-mobile">•</span>
             <div className="topbar-item topbar-phone-group">
               <Phone size={13} className="topbar-icon" />
               <a href={`tel:${STORE_INFO.phone}`} className="topbar-phone-link">8807023322</a>
@@ -73,9 +72,9 @@ export default function Navbar() {
               className="topbar-link"
               title="Locate Techvick Computers on Google Maps"
             >
-              📍 Google Maps
+              Google Maps
             </a>
-            <span className="topbar-divider">|</span>
+            <span className="topbar-bullet">•</span>
             <a
               href={STORE_INFO.social.whatsapp}
               target="_blank"
@@ -84,14 +83,14 @@ export default function Navbar() {
               title="Chat with Store Person on WhatsApp"
             >
               <MessageSquare size={13} />
-              <span>WhatsApp Store Person</span>
+              <span>WhatsApp</span>
             </a>
             {!isStoreStaff && (
               <>
-                <span className="topbar-divider hide-tablet">|</span>
+                <span className="topbar-bullet hide-tablet">•</span>
                 <Link to="/login" className="topbar-link staff-login-toplink hide-tablet" title="Store Staff Portal Access">
                   <ShieldCheck size={13} />
-                  <span>Store Login</span>
+                  <span>Store Portal</span>
                 </Link>
               </>
             )}

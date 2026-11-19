@@ -281,3 +281,19 @@
     font-size: 2.25rem;
   }
 }
+
+@media (max-width: 480px) {
+  .about-hero-content h1 {
+    font-size: 1.75rem;
+    word-break: break-word;
+  }
+  .about-tagline {
+    font-size: 1.05rem;
+  }
+  .about-cta-card {
+    padding: 2rem 1.25rem;
+  }
+  .about-cta-card h2 {
+    font-size: 1.5rem;
+  }
+}

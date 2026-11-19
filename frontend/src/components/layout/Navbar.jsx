@@ -175,7 +175,7 @@ export default function Navbar() {
             {isStoreStaff ? (
               <div className="staff-actions-cluster">
                 <Link to="/admin" className="btn btn-primary btn-sm staff-portal-btn">
-                  <ShieldCheck size={14} /> Store Portal
+                  <ShieldCheck size={14} /> <span className="staff-portal-btn-text">Store Portal</span>
                 </Link>
                 <button onClick={logout} className="btn-icon staff-logout-btn" title="Exit Staff Session">
                   <LogOut size={16} />

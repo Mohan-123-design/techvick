@@ -1,6 +1,6 @@
 # 🖥️ Techvick Computers — Sales & Service Platform
 > **Taking Care of Your PC • Sales & Service**  
-> 📍 46, 8th Street, Tatabad, Gandhipuram, Coimbatore - 641012 | 📞 +91 94433 87654 / +91 94423 87654
+> 📍 46, 8th Street, Tatabad, Gandhipuram, Coimbatore - 641012 | 📞 8807023322 / 8807015780
 
 [![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20FastAPI%20%7C%20MongoDB-blue.svg)](#architecture)
 [![Architecture](https://img.shields.io/badge/Architecture-Microservices%20with%20API%20Gateway-green.svg)](#microservices-architecture)

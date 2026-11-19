@@ -54,7 +54,11 @@ export default function Footer() {
               </div>
               <div className="footer-contact-item">
                 <Phone size={16} className="f-icon" />
-                <a href={`tel:${STORE_INFO.phone}`}>{STORE_INFO.phone}</a>
+                <div style={{ display: 'inline-flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  <a href={`tel:${STORE_INFO.phone}`}>8807023322</a>
+                  <span>/</span>
+                  <a href={`tel:${STORE_INFO.altPhone}`}>8807015780</a>
+                </div>
               </div>
               <div className="footer-contact-item">
                 <Mail size={16} className="f-icon" />
@@ -62,7 +66,7 @@ export default function Footer() {
               </div>
               <div className="footer-contact-item">
                 <Clock size={16} className="f-icon" />
-                <span>{STORE_INFO.workingHours}</span>
+                <span>{STORE_INFO.fullHours}</span>
               </div>
               <div className="footer-contact-item">
                 <Navigation size={16} className="f-icon" />
@@ -112,7 +116,8 @@ export default function Footer() {
             <div className="footer-hours">
               <h4>Store Location</h4>
               <p className="f-muted">46, 8th Street, Tatabad, Gandhipuram, Coimbatore - 641012</p>
-              <p className="f-hours-badge">Mon - Sat: 9:30 AM - 8:30 PM</p>
+              <p className="f-hours-badge">Mon - Sat: 10:00 AM - 8:00 PM</p>
+              <p className="f-hours-badge" style={{ marginTop: '0.35rem' }}>Sunday: 10:00 AM - 4:00 PM</p>
             </div>
           </div>
         </div>

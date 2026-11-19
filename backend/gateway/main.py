@@ -484,7 +484,7 @@ async def seed_sample_data():
             "name": "Techvick Store Manager",
             "email": "techvickcomputers@gmail.com",
             "password": hash_password("Techvick@123"),
-            "phone": "+91 94433 87654",
+            "phone": "8807023322 / 8807015780",
             "role": "admin",
             "is_active": True,
             "created_at": now,

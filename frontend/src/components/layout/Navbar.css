@@ -61,6 +61,17 @@
   color: var(--primary-500);
 }
 
+.topbar-phone-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.topbar-phone-sep {
+  opacity: 0.5;
+  margin: 0 0.1rem;
+}
+
 .staff-login-toplink {
   display: inline-flex;
   align-items: center;

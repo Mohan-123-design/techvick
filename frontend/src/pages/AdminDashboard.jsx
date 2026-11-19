@@ -29,6 +29,7 @@ export default function AdminDashboard() {
   const {
     theme, isDark, toggleTheme, accent, setAccent,
     density, setDensity, fontFamily, setFontFamily,
+    surfaceStyle, setSurfaceStyle, radiusStyle, setRadiusStyle, headerStyle, setHeaderStyle,
     accentPresets, resetAppearance
   } = useTheme();
 
@@ -1516,6 +1517,129 @@ export default function AdminDashboard() {
                   >
                     <strong>Compact</strong>
                     <span>Condensed data view • Recommended for high-volume store counter</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Card Surface Texture */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Sparkles size={18} />
+                  <h3>Card Surface Texture</h3>
+                </div>
+                <p className="app-card-sub">Choose between frosted Axora glass, solid opaque cards, or glowing neon borders.</p>
+                <div className="density-toggle-group">
+                  <button
+                    className={`density-btn ${surfaceStyle === 'glass' ? 'active' : ''}`}
+                    onClick={() => {
+                      setSurfaceStyle('glass');
+                      toast.success('Surface set to Axora Frosted Glass!', { id: 'surface-toast' });
+                    }}
+                  >
+                    <strong>Frosted Glass</strong>
+                    <span>Translucent slate with backdrop blur</span>
+                  </button>
+                  <button
+                    className={`density-btn ${surfaceStyle === 'solid' ? 'active' : ''}`}
+                    onClick={() => {
+                      setSurfaceStyle('solid');
+                      toast.success('Surface set to Solid Clean Opaque!', { id: 'surface-toast' });
+                    }}
+                  >
+                    <strong>Solid Clean</strong>
+                    <span>Opaque surfaces with zero blur & maximum contrast</span>
+                  </button>
+                  <button
+                    className={`density-btn ${surfaceStyle === 'glow' ? 'active' : ''}`}
+                    onClick={() => {
+                      setSurfaceStyle('glow');
+                      toast.success('Surface set to Cyber Neon Glow!', { id: 'surface-toast' });
+                    }}
+                  >
+                    <strong>Neon Glow</strong>
+                    <span>Vibrant accent-colored outer card glows</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Corner Radius Styling */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <Sliders size={18} />
+                  <h3>Corner Geometry & Radius</h3>
+                </div>
+                <p className="app-card-sub">Control curvature of cards, buttons, badges, and modals across the application.</p>
+                <div className="density-toggle-group">
+                  <button
+                    className={`density-btn ${radiusStyle === 'rounded' ? 'active' : ''}`}
+                    onClick={() => {
+                      setRadiusStyle('rounded');
+                      toast.success('Corner radius set to Modern Balanced (Rounded)!', { id: 'radius-toast' });
+                    }}
+                  >
+                    <strong>Modern Rounded</strong>
+                    <span>12px - 16px standard balanced curves</span>
+                  </button>
+                  <button
+                    className={`density-btn ${radiusStyle === 'curved' ? 'active' : ''}`}
+                    onClick={() => {
+                      setRadiusStyle('curved');
+                      toast.success('Corner radius set to Curved Pill!', { id: 'radius-toast' });
+                    }}
+                  >
+                    <strong>Curved Pill</strong>
+                    <span>20px - 28px smooth organic curves</span>
+                  </button>
+                  <button
+                    className={`density-btn ${radiusStyle === 'sharp' ? 'active' : ''}`}
+                    onClick={() => {
+                      setRadiusStyle('sharp');
+                      toast.success('Corner radius set to Sharp Tech!', { id: 'radius-toast' });
+                    }}
+                  >
+                    <strong>Sharp Tech</strong>
+                    <span>4px - 6px precision technical corners</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Header / Navbar Styling */}
+              <div className="appearance-card">
+                <div className="app-card-title">
+                  <LayoutDashboard size={18} />
+                  <h3>Storefront Header Style</h3>
+                </div>
+                <p className="app-card-sub">Adjust the visual presentation of the main storefront navigation bar.</p>
+                <div className="density-toggle-group">
+                  <button
+                    className={`density-btn ${headerStyle === 'frosted' ? 'active' : ''}`}
+                    onClick={() => {
+                      setHeaderStyle('frosted');
+                      toast.success('Header set to Frosted Blur Floating!', { id: 'header-toast' });
+                    }}
+                  >
+                    <strong>Frosted Blur</strong>
+                    <span>Modern floating blur backdrop</span>
+                  </button>
+                  <button
+                    className={`density-btn ${headerStyle === 'solid' ? 'active' : ''}`}
+                    onClick={() => {
+                      setHeaderStyle('solid');
+                      toast.success('Header set to Solid High-Contrast!', { id: 'header-toast' });
+                    }}
+                  >
+                    <strong>Solid Clean</strong>
+                    <span>Opaque background matching page foundation</span>
+                  </button>
+                  <button
+                    className={`density-btn ${headerStyle === 'bordered' ? 'active' : ''}`}
+                    onClick={() => {
+                      setHeaderStyle('bordered');
+                      toast.success('Header set to Accent Underline Border!', { id: 'header-toast' });
+                    }}
+                  >
+                    <strong>Accent Border</strong>
+                    <span>Vibrant colored border along bottom</span>
                   </button>
                 </div>
               </div>

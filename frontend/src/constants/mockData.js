@@ -136,7 +136,7 @@ export const MOCK_SERVICE_REQUESTS = [
     preferred_time_slot: '10:00 AM - 01:00 PM',
     status: 'assigned',
     assigned_technician: 'Ramesh Kumar (Senior Hardware Engineer)',
-    technician_phone: '+91 94433 87654',
+    technician_phone: '8807023322',
     estimated_cost: 699,
     created_at: new Date(Date.now() - 3600000 * 3).toISOString()
   },

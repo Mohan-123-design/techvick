@@ -79,6 +79,7 @@ export default function StoreShowcase() {
                 <div>
                   <strong>Operating Hours</strong>
                   <p>{STORE_INFO.workingHours}</p>
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{STORE_INFO.sundayHours}</p>
                 </div>
               </div>
             </div>

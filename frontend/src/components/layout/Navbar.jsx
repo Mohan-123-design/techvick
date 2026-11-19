@@ -54,13 +54,15 @@ export default function Navbar() {
             <span className="topbar-divider">|</span>
             <span className="topbar-item">
               <Clock size={13} className="topbar-icon" />
-              <span>Mon - Sat: 9:30 AM – 8:30 PM</span>
+              <span>Mon - Sat: 10:00 AM – 8:00 PM | Sun: 10:00 AM – 4:00 PM</span>
             </span>
             <span className="topbar-divider hide-mobile">|</span>
-            <a href={`tel:${STORE_INFO.phone}`} className="topbar-item topbar-phone-link">
+            <div className="topbar-item topbar-phone-group">
               <Phone size={13} className="topbar-icon" />
-              <span>{STORE_INFO.phone}</span>
-            </a>
+              <a href={`tel:${STORE_INFO.phone}`} className="topbar-phone-link">8807023322</a>
+              <span className="topbar-phone-sep">/</span>
+              <a href={`tel:${STORE_INFO.altPhone}`} className="topbar-phone-link">8807015780</a>
+            </div>
           </div>
 
           <div className="topbar-right">

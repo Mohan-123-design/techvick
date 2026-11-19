@@ -490,7 +490,7 @@ export default function BookService() {
                   <Phone size={18} />
                   <div>
                     <span className="hl-label">Tatabad Service Desk</span>
-                    <span className="hl-num">+91 94433 87654</span>
+                    <span className="hl-num">8807023322 / 8807015780</span>
                   </div>
                 </div>
               </div>

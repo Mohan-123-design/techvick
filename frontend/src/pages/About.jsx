@@ -182,7 +182,7 @@ export default function About() {
             <p>Our store person is ready to help you on WhatsApp or call.</p>
             <div className="about-cta-buttons">
               <a href={`tel:${STORE_INFO.phone}`} className="btn btn-outline btn-lg">
-                <Phone size={18} /> Call {STORE_INFO.phone}
+                <Phone size={18} /> Call {STORE_INFO.displayPhone}
               </a>
               <Link to="/book-service" className="btn btn-primary btn-lg">
                 Book a Service Now <ArrowRight size={18} />

@@ -396,7 +396,7 @@ export const usersApi = {
             name: "Techvick Store Manager",
             email: "techvickcomputers@gmail.com",
             role: "admin",
-            phone: "+91 94433 87654",
+            phone: "8807023322 / 8807015780",
           },
           {
             id: "u2",

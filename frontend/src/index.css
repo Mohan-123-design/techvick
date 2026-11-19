@@ -19,6 +19,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Clean body styling without blurry background smudge */
 body {
   font-family: var(--font-sans);
   background: var(--bg-primary);
@@ -26,21 +27,6 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
-}
-
-/* Background pattern */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(ellipse 800px 600px at 20% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 400px at 80% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
 }
 
 a {
@@ -153,15 +139,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary {
-  background: transparent;
+  background: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid var(--border-hover);
+  border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: var(--primary-500);
-  color: var(--primary-400);
+  background: var(--bg-card-hover, var(--bg-secondary));
+  border-color: var(--color-primary, #0284c7);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline:hover {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: var(--color-primary, #0284c7);
+  color: var(--color-primary, #0284c7);
+  transform: translateY(-2px);
+}
+
+.btn-block {
+  width: 100%;
 }
 
 .btn-accent {
@@ -580,4 +584,53 @@ h1, h2, h3, h4, h5, h6 {
 [data-density="compact"] textarea {
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
+}
+
+/* ===================================
+   SURFACE STYLE CUSTOMIZER RULES
+   =================================== */
+
+/* Solid Surface Mode */
+[data-surface="solid"] {
+  --bg-card: #0d1629;
+  --bg-card-hover: #13203c;
+}
+
+[data-theme="light"][data-surface="solid"] {
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+}
+
+[data-surface="solid"] .service-detail-card,
+[data-surface="solid"] .metric-card,
+[data-surface="solid"] .admin-box,
+[data-surface="solid"] .appearance-card,
+[data-surface="solid"] .info-card,
+[data-surface="solid"] .mode-box {
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Neon Glow Surface Mode */
+[data-surface="glow"] .service-detail-card,
+[data-surface="glow"] .metric-card,
+[data-surface="glow"] .admin-box,
+[data-surface="glow"] .appearance-card,
+[data-surface="glow"] .info-card,
+[data-surface="glow"] .mode-box {
+  border-color: rgba(2, 132, 199, 0.35);
+  box-shadow: 0 0 20px var(--shadow-glow, rgba(2, 132, 199, 0.2));
+}
+
+/* ===================================
+   HEADER STYLE CUSTOMIZER RULES
+   =================================== */
+
+[data-header="solid"] .navbar {
+  background: var(--bg-primary) !important;
+  backdrop-filter: none !important;
+}
+
+[data-header="bordered"] .navbar {
+  border-bottom: 2px solid var(--color-primary, #0284c7) !important;
 }

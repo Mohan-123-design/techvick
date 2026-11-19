@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Layout
@@ -19,7 +19,6 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import Services from './pages/Services';
 import BookService from './pages/BookService';
-import Warranty from './pages/Warranty';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
@@ -68,7 +67,7 @@ export default function App() {
                   <Route path="/products" element={<Products />} />
                   <Route path="/services" element={<Services />} />
                   <Route path="/book-service" element={<BookService />} />
-                  <Route path="/warranty" element={<Warranty />} />
+                  <Route path="/warranty" element={<Navigate to="/services" replace />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/cart" element={<Cart />} />

@@ -186,9 +186,6 @@ export default function BookService() {
             </div>
 
             <div className="confirm-actions">
-              <Link to="/warranty" className="btn btn-secondary">
-                <Shield size={16} /> Check Existing Warranty
-              </Link>
               <button
                 className="btn btn-primary"
                 onClick={() => {
@@ -225,15 +222,14 @@ export default function BookService() {
                       onChange={handleChange}
                     />
                     <div className="mode-icon-box">
-                      <Home size={24} />
+                      <Home size={22} />
                     </div>
                     <div className="mode-content">
                       <div className="mode-title-row">
                         <h4>Doorstep Site Visit</h4>
-                        <span className="mode-tag green">Recommended</span>
                       </div>
-                      <p>Technician comes to your home or office with diagnostic toolkit.</p>
-                      <span className="mode-price-note">Coimbatore Doorstep Inspection • Free Assessment</span>
+                      <p>Technician comes to your home or office with diagnostic toolkit across Coimbatore.</p>
+                      <span className="mode-price-note">Doorstep Inspection • Free Counter Assessment</span>
                     </div>
                   </label>
 
@@ -249,15 +245,14 @@ export default function BookService() {
                       onChange={handleChange}
                     />
                     <div className="mode-icon-box">
-                      <MapPin size={24} />
+                      <MapPin size={22} />
                     </div>
                     <div className="mode-content">
                       <div className="mode-title-row">
                         <h4>Tatabad Store Drop-off</h4>
-                        <span className="mode-tag blue">Zero Visit Charge</span>
                       </div>
-                      <p>Bring your device to Techvick Computers at 46, 8th Street, Tatabad, Gandhipuram, Coimbatore.</p>
-                      <span className="mode-price-note">Free initial inspection & component check</span>
+                      <p>Bring your device to Techvick Computers showroom at 46, 8th Street, Tatabad.</p>
+                      <span className="mode-price-note">Free Initial Inspection & Component Check</span>
                     </div>
                   </label>
                 </div>
@@ -467,7 +462,7 @@ export default function BookService() {
             {/* Live Cost Estimate & Transparency Summary */}
             <aside className="estimate-sidebar">
               <div className="estimate-card">
-                <h3>Assessment & Warranty</h3>
+                <h3>Assessment & Guarantee</h3>
                 <p className="estimate-sub">Zero advance fees • Free counter diagnosis</p>
 
                 <div className="estimate-breakdown">

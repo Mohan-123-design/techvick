@@ -109,7 +109,6 @@ export default function Footer() {
             <ul>
               <li><Link to="/products">Live Market Prices & Stock</Link></li>
               <li><Link to="/book-service">Book Service (Doorstep/Store)</Link></li>
-              <li><Link to="/warranty">Check Repair Warranty</Link></li>
               <li><Link to="/about">About Techvick Computers</Link></li>
               <li><Link to="/contact">Contact Store Desk</Link></li>
             </ul>

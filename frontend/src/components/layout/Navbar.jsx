@@ -35,7 +35,6 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/products', label: 'Products', hasDropdown: true },
     { to: '/services', label: 'Services' },
-    { to: '/warranty', label: 'Warranty' },
     { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact' },
   ];

@@ -197,7 +197,7 @@ export default function Cart() {
                       </div>
                       <h3>{item.name}</h3>
                       <p className="item-warranty-note">
-                        <Shield size={13} /> {item.warranty_months || 24} Months Store Warranty
+                        <Shield size={13} /> {item.warranty_months || 24} Months Store Guarantee
                       </p>
                       <div className="item-price-unit">{formatPrice(item.price)} each</div>
                     </div>
@@ -307,16 +307,16 @@ export default function Cart() {
                   href={generateWhatsAppUrl()}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn btn-outline btn-block"
-                  style={{ marginTop: '0.75rem', borderColor: '#25d366', color: '#25d366', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                  className="whatsapp-cart-btn"
+                  title="Connect via WhatsApp with your cart items pre-filled"
                 >
-                  <MessageSquare size={16} /> WhatsApp Store Person with Cart
+                  <MessageSquare size={18} /> WhatsApp Store Person with Cart
                 </a>
 
                 <div className="summary-perks">
                   <div className="sp-item">
                     <Shield size={16} />
-                    <span>Store warranty & printed GST bill provided</span>
+                    <span>Store written guarantee & GST bill provided</span>
                   </div>
                   <div className="sp-item">
                     <CheckCircle2 size={16} />

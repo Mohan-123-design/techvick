@@ -14,6 +14,7 @@ export default function Contact() {
     email: '',
     phone: '',
     subject: 'general',
+    customSubject: '',
     message: '',
   });
 
@@ -45,7 +46,13 @@ export default function Contact() {
 
     setIsSubmitting(true);
     try {
-      await usersApi.submitContact(formData);
+      const resolvedSubject = formData.subject === 'other'
+        ? (formData.customSubject?.trim() || 'Other Inquiry')
+        : formData.subject;
+      await usersApi.submitContact({
+        ...formData,
+        subject: resolvedSubject,
+      });
       setSubmitted(true);
       toast.success('Your message has been sent to our Tatabad store desk! We will contact you shortly.');
     } catch (err) {
@@ -261,8 +268,20 @@ export default function Contact() {
                       <option value="pc_build">Custom PC Rig Assembly</option>
                       <option value="cctv_printer">CCTV Surveillance / Printer Service</option>
                       <option value="data_recovery">Hard Drive Data Recovery</option>
-                      <option value="general">Other Technical Support</option>
+                      <option value="general">Technical Support</option>
+                      <option value="other">Other Inquiry / Custom Requirement</option>
                     </select>
+                    {formData.subject === 'other' && (
+                      <input
+                        type="text"
+                        name="customSubject"
+                        placeholder="Please specify your inquiry purpose..."
+                        value={formData.customSubject || ''}
+                        onChange={handleChange}
+                        required={formData.subject === 'other'}
+                        style={{ marginTop: '0.65rem' }}
+                      />
+                    )}
                   </div>
                 </div>
 

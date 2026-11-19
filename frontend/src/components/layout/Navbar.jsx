@@ -46,16 +46,16 @@ export default function Navbar() {
       <header className="topbar">
         <div className="container topbar-inner">
           <div className="topbar-left">
-            <span className="topbar-item">
+            <span className="topbar-item topbar-address hide-mobile">
               <MapPin size={13} className="topbar-icon" />
               <span>46, 8th St, Tatabad, Coimbatore</span>
             </span>
-            <span className="topbar-bullet">•</span>
-            <span className="topbar-item">
+            <span className="topbar-bullet hide-mobile">•</span>
+            <span className="topbar-item topbar-hours hide-tablet">
               <Clock size={13} className="topbar-icon" />
               <span>Mon - Sat: 10 AM – 8 PM • Sun: 10 AM – 4 PM</span>
             </span>
-            <span className="topbar-bullet hide-mobile">•</span>
+            <span className="topbar-bullet hide-tablet">•</span>
             <div className="topbar-item topbar-phone-group">
               <Phone size={13} className="topbar-icon" />
               <a href={`tel:${STORE_INFO.phone}`} className="topbar-phone-link">8807023322</a>
@@ -69,12 +69,12 @@ export default function Navbar() {
               href={STORE_INFO.mapUrl}
               target="_blank"
               rel="noreferrer"
-              className="topbar-link"
+              className="topbar-link hide-mobile"
               title="Locate Techvick Computers on Google Maps"
             >
               Google Maps
             </a>
-            <span className="topbar-bullet">•</span>
+            <span className="topbar-bullet hide-mobile">•</span>
             <a
               href={STORE_INFO.social.whatsapp}
               target="_blank"

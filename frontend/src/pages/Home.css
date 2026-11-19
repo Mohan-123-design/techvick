@@ -25,13 +25,7 @@
 }
 
 .hero-grid-pattern {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--border-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.45;
+  display: none !important;
 }
 
 .hero-inner {
@@ -683,7 +677,7 @@
 
 /* Light Theme Clean Visual Enhancements */
 [data-theme="light"] .hero-grid-pattern {
-  opacity: 0.16;
+  display: none !important;
 }
 
 [data-theme="light"] .hero-orb-1 {

@@ -15,11 +15,12 @@ export default function BookService() {
   const [formData, setFormData] = useState({
     serviceMode: 'site_visit', // 'site_visit' or 'in_store'
     deviceType: 'laptop',
+    customDeviceType: '',
     brand: '',
     model: '',
     issueCategory: 'general_repair',
+    customIssueCategory: '',
     issueDescription: '',
-    urgency: 'standard', // 'standard' or 'urgent'
     customerName: '',
     customerPhone: '',
     customerEmail: '',
@@ -39,6 +40,7 @@ export default function BookService() {
     { id: 'printer', name: 'Printer / Cartridge', icon: '🖨️' },
     { id: 'cctv', name: 'CCTV & Security System', icon: '📷' },
     { id: 'networking', name: 'Network / Data Recovery', icon: '💾' },
+    { id: 'other', name: 'Other Device', icon: '🔧' },
   ];
 
   const issueCategories = [
@@ -50,6 +52,7 @@ export default function BookService() {
     { id: 'printer_jam', name: 'Printer Paper Jam / Blank Print / Cartridge Refill' },
     { id: 'cctv_offline', name: 'CCTV Offline / No Video / Storage Error' },
     { id: 'data_recovery', name: 'Data Recovery from Damaged Disk' },
+    { id: 'other', name: 'Other Issue / Custom Service Requirement' },
   ];
 
   const handleChange = (e) => {
@@ -72,24 +75,31 @@ export default function BookService() {
 
     setIsSubmitting(true);
     try {
+      const resolvedDeviceType = formData.deviceType === 'other'
+        ? (formData.customDeviceType?.trim() || 'Other Device')
+        : formData.deviceType;
+      const resolvedIssueCategory = formData.issueCategory === 'other'
+        ? (formData.customIssueCategory?.trim() || 'Custom Requirement')
+        : formData.issueCategory;
+
       const payload = {
         service_mode: formData.serviceMode,
         service_type: formData.serviceMode,
-        device_type: formData.deviceType,
+        device_type: resolvedDeviceType,
         device_brand: formData.brand.trim(),
         device_model: formData.model.trim(),
         brand: formData.brand.trim(),
         model: formData.model.trim(),
-        issue_category: formData.issueCategory,
-        issue_description: formData.issueDescription?.trim() || `${formData.brand} ${formData.model} diagnostic inspection requested.`,
+        issue_category: resolvedIssueCategory,
+        issue_description: formData.issueDescription?.trim() || `${formData.brand} ${formData.model} (${resolvedDeviceType}) diagnostic inspection requested.`,
         customer_name: formData.customerName.trim(),
         customer_phone: formData.customerPhone.trim(),
-        customer_email: formData.customerEmail?.trim() || '',
+        customer_email: formData.customDeviceType ? `${formData.customerEmail?.trim()} [Device: ${formData.customDeviceType}]` : (formData.customerEmail?.trim() || ''),
         address: formData.address.trim(),
         landmark: formData.landmark.trim(),
         preferred_date: formData.preferredDate,
         preferred_time_slot: formData.preferredTimeSlot,
-        urgency: formData.urgency,
+        urgency: 'standard',
         estimated_cost: 0,
         notes: preselectedService ? [`Requested: ${preselectedService}`] : [],
       };
@@ -99,6 +109,8 @@ export default function BookService() {
         ticketNumber: result.ticket_number || 'SRV-' + Math.floor(100000 + Math.random() * 900000),
         estimatedCost: 'Free Assessment (Quote on Diagnosis)',
         ...formData,
+        deviceType: resolvedDeviceType,
+        issueCategory: resolvedIssueCategory,
       });
       toast.success('Service Request Booked Successfully!');
     } catch (err) {
@@ -267,6 +279,20 @@ export default function BookService() {
                     </button>
                   ))}
                 </div>
+
+                {formData.deviceType === 'other' && (
+                  <div className="form-field animate-fadeIn" style={{ marginTop: '1rem' }}>
+                    <label>Specify Your Device Type *</label>
+                    <input
+                      type="text"
+                      name="customDeviceType"
+                      placeholder="e.g. Server, Projector, Tablet, POS Billing Machine, Barcode Scanner..."
+                      value={formData.customDeviceType || ''}
+                      onChange={handleChange}
+                      required={formData.deviceType === 'other'}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Step 3: Brand & Model */}
@@ -311,6 +337,20 @@ export default function BookService() {
                   </select>
                 </div>
 
+                {formData.issueCategory === 'other' && (
+                  <div className="form-field animate-fadeIn" style={{ marginTop: '0.5rem', marginBottom: '0.85rem' }}>
+                    <label>Specify Your Issue / Service Requirement *</label>
+                    <input
+                      type="text"
+                      name="customIssueCategory"
+                      placeholder="e.g. Liquid spill cleaning, BIOS flashing, custom software install..."
+                      value={formData.customIssueCategory || ''}
+                      onChange={handleChange}
+                      required={formData.issueCategory === 'other'}
+                    />
+                  </div>
+                )}
+
                 <div className="form-field">
                   <label>Describe the Problem / Symptoms</label>
                   <textarea
@@ -320,32 +360,6 @@ export default function BookService() {
                     value={formData.issueDescription}
                     onChange={handleChange}
                   ></textarea>
-                </div>
-
-                <div className="urgency-selector">
-                  <label className="urgency-label">Service Speed</label>
-                  <div className="urgency-options">
-                    <label className={`urgency-opt ${formData.urgency === 'standard' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value="standard"
-                        checked={formData.urgency === 'standard'}
-                        onChange={handleChange}
-                      />
-                      <span>Standard Schedule (Same Day or Next Day)</span>
-                    </label>
-                    <label className={`urgency-opt ${formData.urgency === 'urgent' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value="urgent"
-                        checked={formData.urgency === 'urgent'}
-                        onChange={handleChange}
-                      />
-                      <span>Urgent / Emergency Dispatch (+₹250 within 2 hours)</span>
-                    </label>
-                  </div>
                 </div>
               </div>
 

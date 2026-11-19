@@ -70,9 +70,11 @@ export default function AdminDashboard() {
     customer_email: '',
     service_mode: 'in_store',
     device_type: 'laptop',
+    custom_device_type: '',
     brand: '',
     model: '',
     issue_category: 'general_repair',
+    custom_issue_category: '',
     issue_description: '',
     urgency: 'standard',
     address: '',
@@ -410,15 +412,22 @@ export default function AdminDashboard() {
       return;
     }
 
+    const resolvedDeviceType = ticketForm.device_type === 'other'
+      ? (ticketForm.custom_device_type?.trim() || 'Other Device')
+      : ticketForm.device_type;
+    const resolvedIssueCategory = ticketForm.issue_category === 'other'
+      ? (ticketForm.custom_issue_category?.trim() || 'Custom Diagnostic')
+      : ticketForm.issue_category;
+
     const payload = {
       customer_name: ticketForm.customer_name.trim(),
       customer_phone: ticketForm.customer_phone.trim(),
       customer_email: ticketForm.customer_email.trim(),
       service_mode: ticketForm.service_mode,
-      device_type: ticketForm.device_type,
+      device_type: resolvedDeviceType,
       brand: ticketForm.brand.trim(),
       model: ticketForm.model.trim(),
-      issue_category: ticketForm.issue_category,
+      issue_category: resolvedIssueCategory,
       issue_description: ticketForm.issue_description.trim(),
       urgency: ticketForm.urgency,
       address: ticketForm.address.trim(),
@@ -2444,7 +2453,17 @@ export default function AdminDashboard() {
                     <option value="printer">Printer (Laser / InkTank)</option>
                     <option value="cctv">CCTV Surveillance & DVR</option>
                     <option value="networking">Networking & Wi-Fi Switch</option>
+                    <option value="other">Other Device</option>
                   </select>
+                  {ticketForm.device_type === 'other' && (
+                    <input
+                      type="text"
+                      placeholder="Specify device type..."
+                      value={ticketForm.custom_device_type || ''}
+                      onChange={(e) => setTicketForm({ ...ticketForm, custom_device_type: e.target.value })}
+                      style={{ marginTop: '0.5rem' }}
+                    />
+                  )}
                 </div>
                 <div className="form-field">
                   <label>Brand & Model</label>
@@ -2481,7 +2500,17 @@ export default function AdminDashboard() {
                     <option value="printer_repair">Printer Toner / Paper Jam / Roller</option>
                     <option value="cctv_network">CCTV Online DVR / Cabling Setup</option>
                     <option value="data_recovery">Clean-Room Hard Drive Data Recovery</option>
+                    <option value="other">Other Issue / Custom Service</option>
                   </select>
+                  {ticketForm.issue_category === 'other' && (
+                    <input
+                      type="text"
+                      placeholder="Specify issue..."
+                      value={ticketForm.custom_issue_category || ''}
+                      onChange={(e) => setTicketForm({ ...ticketForm, custom_issue_category: e.target.value })}
+                      style={{ marginTop: '0.5rem' }}
+                    />
+                  )}
                 </div>
                 <div className="form-field">
                   <label>Urgency Level</label>

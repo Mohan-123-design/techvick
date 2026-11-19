@@ -667,27 +667,40 @@ export const servicesApi = {
 
   createRequest: async (data) => {
     try {
-      return await api.post("/api/services/request", data);
-    } catch {
+      const res = await api.post("/api/services/request", data);
+      const created = res?.service_request || res;
+      // Sync into local cache immediately so admin dashboard sees it right away
+      const requests = getLocalServiceRequests();
+      const exists = requests.some((r) => r.ticket_number === created.ticket_number);
+      if (!exists) {
+        requests.unshift(created);
+        saveLocalServiceRequests(requests);
+      }
+      return res;
+    } catch (err) {
+      console.warn("Backend create service request failed, saving locally:", err);
       const ticketId = "SRV-" + Math.floor(100000 + Math.random() * 900000);
       const requests = getLocalServiceRequests();
       const newRequest = {
         _id: "srv-" + Date.now(),
         ticket_number: ticketId,
-        service_mode: data.serviceMode || data.service_type || "site_visit",
-        device_type: data.deviceType || "laptop",
-        brand: data.brand || "",
-        model: data.model || "",
-        issue_category: data.issueCategory || "general_repair",
-        issue_description: data.issueDescription || "",
-        customer_name: data.customerName || "Customer",
-        customer_phone: data.customerPhone || "",
+        service_mode: data.service_mode || data.serviceMode || "site_visit",
+        service_type: data.service_type || data.serviceMode || "site_visit",
+        device_type: data.device_type || data.deviceType || "laptop",
+        brand: data.brand || data.device_brand || "",
+        model: data.model || data.device_model || "",
+        issue_category: data.issue_category || data.issueCategory || "general_repair",
+        issue_description: data.issue_description || data.issueDescription || "Service inspection requested",
+        customer_name: data.customer_name || data.customerName || "Customer",
+        customer_phone: data.customer_phone || data.customerPhone || "",
+        customer_email: data.customer_email || data.customerEmail || "",
         address: data.address || "",
+        landmark: data.landmark || "",
         status: "submitted",
-        estimated_cost: data.estimated_cost || 499,
+        estimated_cost: 0,
         preferred_date:
-          data.preferredDate || new Date().toISOString().split("T")[0],
-        preferred_time_slot: data.preferredTimeSlot || "10:00 AM - 01:00 PM",
+          data.preferred_date || data.preferredDate || new Date().toISOString().split("T")[0],
+        preferred_time_slot: data.preferred_time_slot || data.preferredTimeSlot || "10:00 AM - 01:00 PM",
         created_at: new Date().toISOString(),
       };
       requests.unshift(newRequest);
@@ -723,7 +736,16 @@ export const servicesApi = {
 
   getAllAdmin: async (params = {}) => {
     try {
-      return await api.get("/api/services/requests", { params });
+      const data = await api.get("/api/services/requests", { params });
+      if (data && data.service_requests && data.service_requests.length > 0) {
+        saveLocalServiceRequests(data.service_requests);
+        return data;
+      }
+      const local = getLocalServiceRequests();
+      if (local && local.length > 0) {
+        return { service_requests: local, total: local.length };
+      }
+      return data || { service_requests: [], total: 0 };
     } catch {
       let requests = getLocalServiceRequests();
       if (params.status_filter && params.status_filter !== "all") {

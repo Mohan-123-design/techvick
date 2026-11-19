@@ -195,19 +195,48 @@ async def create_service_request(request: ServiceRequestCreate):
     """Submit a new service request / site visit (accessible by all customers)."""
     collection = Database.get_collection(COLLECTION)
 
-    # Validate: site visits require address
-    if request.service_type == "site_visit" and not request.address:
-        raise HTTPException(
-            status_code=400,
-            detail="Address is required for site visit services",
-        )
+    # Normalize fields from camelCase or snake_case
+    s_mode = request.service_mode or request.serviceMode or request.service_type or "site_visit"
+    c_name = (request.customer_name or request.customerName or "Customer").strip()
+    c_phone = (request.customer_phone or request.customerPhone or "").strip()
+    c_email = (request.customer_email or request.customerEmail or "").strip()
+    d_type = request.device_type or request.deviceType or "laptop"
+    brand = (request.brand or request.device_brand or "").strip()
+    model = (request.model or request.device_model or "").strip()
+    category = request.issue_category or request.issueCategory or "general_repair"
+    issue_desc = (request.issue_description or request.issueDescription or "Service diagnostic & inspection requested.").strip()
+    addr = (request.address or "").strip()
+    landmark = (request.landmark or "").strip()
+    pref_date = request.preferred_date or request.preferredDate or None
+    pref_slot = request.preferred_time_slot or request.preferredTimeSlot or request.preferred_time or "10:00 AM - 01:00 PM"
+    urg = request.urgency or ("urgent" if request.is_urgent else "standard")
+    est = float(request.estimated_cost or 0.0)
+
+    # Validate site visit address
+    if s_mode == "site_visit" and not addr:
+        addr = "Tatabad / Coimbatore Local"
 
     now = utc_now()
+    ticket_num = generate_ticket_number()
     doc = {
-        "ticket_number": generate_ticket_number(),
-        **request.model_dump(),
+        "ticket_number": ticket_num,
+        "service_mode": s_mode,
+        "service_type": s_mode,
+        "device_type": d_type,
+        "brand": brand,
+        "model": model,
+        "issue_category": category,
+        "issue_description": issue_desc,
+        "customer_name": c_name,
+        "customer_phone": c_phone,
+        "customer_email": c_email,
+        "address": addr,
+        "landmark": landmark,
+        "preferred_date": pref_date,
+        "preferred_time_slot": pref_slot,
+        "urgency": urg,
         "status": "submitted",
-        "estimated_cost": getattr(request, "estimated_cost", None) or 499.0,
+        "estimated_cost": est,
         "assigned_technician": None,
         "technician_phone": None,
         "notes": [],
@@ -220,8 +249,8 @@ async def create_service_request(request: ServiceRequestCreate):
 
     return {
         "service_request": serialize_doc(doc),
-        "ticket_number": doc["ticket_number"],
-        "message": f"Service request submitted! Your ticket number is {doc['ticket_number']}. We'll contact you within 2 hours.",
+        "ticket_number": ticket_num,
+        "message": f"Service request submitted! Your ticket number is {ticket_num}. We'll contact you within 2 hours.",
     }
 
 

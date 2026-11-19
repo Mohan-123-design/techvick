@@ -57,6 +57,7 @@ export default function AdminDashboard() {
   const [editingService, setEditingService] = useState(null);
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState(null);
+  const [ticketDetailsModal, setTicketDetailsModal] = useState(null);
   const [ticketSearch, setTicketSearch] = useState('');
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -1192,7 +1193,15 @@ export default function AdminDashboard() {
                     return (
                       <tr key={srvId}>
                         <td>
-                          <strong>{srv.ticket_number}</strong>
+                          <button
+                            type="button"
+                            className="ticket-link-btn"
+                            onClick={() => setTicketDetailsModal(srv)}
+                            style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block' }}
+                            title="Click to view full appointment details"
+                          >
+                            <strong style={{ color: 'var(--text-accent)', textDecoration: 'underline' }}>{srv.ticket_number}</strong>
+                          </button>
                           <span className="table-date">{new Date(srv.created_at).toLocaleDateString()}</span>
                         </td>
                         <td>
@@ -1243,6 +1252,13 @@ export default function AdminDashboard() {
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div className="table-actions">
+                            <button
+                              className="btn-icon-table view"
+                              onClick={() => setTicketDetailsModal(srv)}
+                              title="View full appointment details"
+                            >
+                              <Eye size={15} />
+                            </button>
                             <button
                               className="btn btn-secondary btn-sm"
                               onClick={() => handleOpenAssignModal(srv)}
@@ -2568,6 +2584,154 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* 6. VIEW SERVICE TICKET APPOINTMENT DETAILS MODAL */}
+      {/* ============================================================ */}
+      {ticketDetailsModal && (
+        <div className="modal-overlay" onClick={() => setTicketDetailsModal(null)}>
+          <div className="modal-container admin-ticket-view-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setTicketDetailsModal(null)}>
+              <X size={20} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.25rem' }}>
+              <h2>Ticket {ticketDetailsModal.ticket_number}</h2>
+              <span className={`status-pill ${ticketDetailsModal.status}`} style={{ fontSize: '0.85rem' }}>
+                {ticketDetailsModal.status}
+              </span>
+            </div>
+            <p className="modal-sub">
+              Booked on {new Date(ticketDetailsModal.created_at).toLocaleString()} • {ticketDetailsModal.service_mode === 'site_visit' ? 'Doorstep Site Visit' : 'Tatabad Walk-In Counter'}
+            </p>
+
+            <div className="ticket-view-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
+              {/* Customer Contact Strip */}
+              <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-accent)', fontSize: '0.95rem' }}>Customer & Appointment Contact</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.9rem' }}>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Customer Name</span>
+                    <strong>{ticketDetailsModal.customer_name}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Phone Number</span>
+                    <a href={`tel:${ticketDetailsModal.customer_phone}`} style={{ fontWeight: 700, color: 'var(--text-accent)' }}>
+                      📞 {ticketDetailsModal.customer_phone}
+                    </a>
+                  </div>
+                  {ticketDetailsModal.customer_email && (
+                    <div>
+                      <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Email Address</span>
+                      <span>{ticketDetailsModal.customer_email}</span>
+                    </div>
+                  )}
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Urgency</span>
+                    <strong>{ticketDetailsModal.urgency === 'urgent' ? '⚡ Urgent Priority' : 'Standard Priority'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Mode & Address */}
+              <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-accent)', fontSize: '0.95rem' }}>Service Mode & Location</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.9rem' }}>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Service Mode</span>
+                    <strong>{ticketDetailsModal.service_mode === 'site_visit' ? '🏠 Doorstep Site Visit' : '🏪 Tatabad Store Drop-off'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Preferred Date & Slot</span>
+                    <strong>{ticketDetailsModal.preferred_date || 'Today'} • {ticketDetailsModal.preferred_time_slot || '10:00 AM - 01:00 PM'}</strong>
+                  </div>
+                </div>
+                {ticketDetailsModal.service_mode === 'site_visit' && (
+                  <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Doorstep Visit Address</span>
+                    <p style={{ margin: '0.2rem 0', fontWeight: 600 }}>{ticketDetailsModal.address}</p>
+                    {ticketDetailsModal.landmark && (
+                      <small style={{ color: 'var(--text-secondary)' }}>Landmark: {ticketDetailsModal.landmark}</small>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Device & Symptoms */}
+              <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-accent)', fontSize: '0.95rem' }}>Device Information & Problem Description</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.9rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Device Type</span>
+                    <strong>{ticketDetailsModal.device_type?.toUpperCase()}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Brand & Model</span>
+                    <strong>{ticketDetailsModal.brand || 'Generic'} {ticketDetailsModal.model}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Issue Category</span>
+                    <span>{ticketDetailsModal.issue_category?.replace('_', ' ')}</span>
+                  </div>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem', marginBottom: '0.2rem' }}>Customer Complaint / Symptoms</span>
+                  <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    {ticketDetailsModal.issue_description || 'No detailed issue description provided.'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Technician & Estimates */}
+              <div style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-accent)', fontSize: '0.95rem' }}>Engineer Assignment & Estimate</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.9rem' }}>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Assigned Engineer</span>
+                    <strong>{ticketDetailsModal.assigned_technician || 'Pending Allocation'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Engineer Phone</span>
+                    <span>{ticketDetailsModal.technician_phone || '8807023322'}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '0.8rem' }}>Estimated Cost</span>
+                    <strong>{ticketDetailsModal.estimated_cost ? formatPrice(ticketDetailsModal.estimated_cost) : 'Free Preliminary Inspection'}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  const srv = ticketDetailsModal;
+                  setTicketDetailsModal(null);
+                  handleOpenAssignModal(srv);
+                }}
+              >
+                <UserCheck size={16} /> Assign Technician
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  const srv = ticketDetailsModal;
+                  setTicketDetailsModal(null);
+                  handleOpenTicketModal(srv);
+                }}
+              >
+                <Edit size={16} /> Edit Ticket Details
+              </button>
+              <button type="button" className="btn btn-primary" onClick={() => setTicketDetailsModal(null)}>
+                Close Details
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -32,21 +32,39 @@ class ServiceRequestStatus(str, Enum):
 
 
 class ServiceRequestCreate(BaseModel):
-    service_type: ServiceTypeEnum
-    device_type: DeviceTypeEnum
+    model_config = ConfigDict(extra="allow")
+
+    customer_name: Optional[str] = None
+    customerName: Optional[str] = None
+    customer_phone: Optional[str] = None
+    customerPhone: Optional[str] = None
+    customer_email: Optional[str] = ""
+    customerEmail: Optional[str] = ""
+    service_type: Optional[str] = "site_visit"
+    service_mode: Optional[str] = None
+    serviceMode: Optional[str] = None
+    device_type: Optional[str] = "laptop"
+    deviceType: Optional[str] = None
     device_brand: Optional[str] = None
     device_model: Optional[str] = None
-    issue_description: str = Field(..., min_length=10)
+    brand: Optional[str] = ""
+    model: Optional[str] = ""
+    issue_category: Optional[str] = "general_repair"
+    issueCategory: Optional[str] = None
+    issue_description: Optional[str] = ""
+    issueDescription: Optional[str] = None
+    address: Optional[str] = ""
+    landmark: Optional[str] = ""
+    city: Optional[str] = "Coimbatore"
+    pincode: Optional[str] = ""
     preferred_date: Optional[str] = None
+    preferredDate: Optional[str] = None
+    preferred_time_slot: Optional[str] = "10:00 AM - 01:00 PM"
+    preferredTimeSlot: Optional[str] = None
     preferred_time: Optional[str] = None
-    # Contact info (for guest users)
-    customer_name: str = Field(..., min_length=2)
-    customer_email: EmailStr
-    customer_phone: str = Field(..., min_length=10)
-    address: Optional[str] = None  # Required for site visits
-    city: Optional[str] = None
-    pincode: Optional[str] = None
-    is_urgent: bool = False
+    urgency: Optional[str] = "standard"
+    is_urgent: Optional[bool] = False
+    estimated_cost: Optional[float] = 0.0
 
 
 class ServiceRequestResponse(BaseModel):

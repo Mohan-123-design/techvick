@@ -33,12 +33,12 @@ export default function BookService() {
   const [bookingConfirmed, setBookingConfirmed] = useState(null);
 
   const deviceTypes = [
-    { id: 'laptop', name: 'Laptop (New / Used)', icon: '💻', baseCost: 299 },
-    { id: 'desktop', name: 'Desktop PC / Custom Rig', icon: '🖥️', baseCost: 299 },
-    { id: 'imac', name: 'Apple iMac / Mac Mini', icon: '🍏', baseCost: 499 },
-    { id: 'printer', name: 'Printer / Cartridge', icon: '🖨️', baseCost: 249 },
-    { id: 'cctv', name: 'CCTV & Security System', icon: '📷', baseCost: 399 },
-    { id: 'networking', name: 'Network / Data Recovery', icon: '💾', baseCost: 499 },
+    { id: 'laptop', name: 'Laptop (New / Used)', icon: '💻' },
+    { id: 'desktop', name: 'Desktop PC / Custom Rig', icon: '🖥️' },
+    { id: 'imac', name: 'Apple iMac / Mac Mini', icon: '🍏' },
+    { id: 'printer', name: 'Printer / Cartridge', icon: '🖨️' },
+    { id: 'cctv', name: 'CCTV & Security System', icon: '📷' },
+    { id: 'networking', name: 'Network / Data Recovery', icon: '💾' },
   ];
 
   const issueCategories = [
@@ -51,11 +51,6 @@ export default function BookService() {
     { id: 'cctv_offline', name: 'CCTV Offline / No Video / Storage Error' },
     { id: 'data_recovery', name: 'Data Recovery from Damaged Disk' },
   ];
-
-  // Dynamic cost calculation - Blank / Free Assessment per service strategy
-  const calculateEstimate = () => {
-    return 0;
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,11 +72,26 @@ export default function BookService() {
 
     setIsSubmitting(true);
     try {
-      const estimated = calculateEstimate();
       const payload = {
-        ...formData,
-        estimated_cost: estimated,
-        notes: preselectedService ? `Requested: ${preselectedService}` : '',
+        service_mode: formData.serviceMode,
+        service_type: formData.serviceMode,
+        device_type: formData.deviceType,
+        device_brand: formData.brand.trim(),
+        device_model: formData.model.trim(),
+        brand: formData.brand.trim(),
+        model: formData.model.trim(),
+        issue_category: formData.issueCategory,
+        issue_description: formData.issueDescription?.trim() || `${formData.brand} ${formData.model} diagnostic inspection requested.`,
+        customer_name: formData.customerName.trim(),
+        customer_phone: formData.customerPhone.trim(),
+        customer_email: formData.customerEmail?.trim() || '',
+        address: formData.address.trim(),
+        landmark: formData.landmark.trim(),
+        preferred_date: formData.preferredDate,
+        preferred_time_slot: formData.preferredTimeSlot,
+        urgency: formData.urgency,
+        estimated_cost: 0,
+        notes: preselectedService ? [`Requested: ${preselectedService}`] : [],
       };
 
       const result = await servicesApi.createRequest(payload);
@@ -211,7 +221,7 @@ export default function BookService() {
                         <span className="mode-tag green">Recommended</span>
                       </div>
                       <p>Technician comes to your home or office with diagnostic toolkit.</p>
-                      <span className="mode-price-note">+ ₹199 doorstep convenience fee</span>
+                      <span className="mode-price-note">Coimbatore Doorstep Inspection • Free Assessment</span>
                     </div>
                   </label>
 
@@ -254,7 +264,6 @@ export default function BookService() {
                     >
                       <span className="dev-icon">{dev.icon}</span>
                       <span className="dev-name">{dev.name}</span>
-                      <span className="dev-cost">Base ₹{dev.baseCost}</span>
                     </button>
                   ))}
                 </div>
